@@ -23,12 +23,124 @@ sprite = {255, 129, 129, 129, 129, 129, 129, 255}
 vthumb.Sprite(x, y, sprite)
 
 ]]
-local t = 1
+-- Game variables
+local level = 1
+local gameOver = false
+local gameWon = false
+
+-- Game constants
+local DOT = "."
+local GHOST = "GHOST"
+local GHOST_LEVEL_INKY = "i"
+local GHOST_LEVEL_PINKY = "p"
+local GHOST_LEVEL_BLINKY = "b"
+local GHOST_LEVEL_CLYDE = "c"
+local BONUS = "BONUS"
+local PACMAN = "PACMAN"
+
+-- Lists
+local listElements = {}
+local listDots = {}
+local listGhosts = {}
+local listBonus = {}
+
+function addElement(pX, pY, pSprite, pType)
+    local el = {x = pX, y = pY, sprite = pSprite, del = false, type = pType}
+    table.insert(listElements, el)
+    return el
+end
+
+function addGhost(pX, pY, pSprite, pLevel)
+    local gh = addElement(pX, pY, pSprite, GHOST)
+    gh.level = pLevel
+    table.insert(listGhosts, gh)
+end
+
+function addDots(pX, pY, pSprite, pLevel)
+    local dt = addElement(pX, pY, pSprite, DOT)
+    dt.level = pLevel
+    table.insert(listDots, dt)
+end
+
+function addBonus(pX, pY, pSprite, pLevel)
+    local bn = addElement(pX, pY, pSprite, BONUS)
+    bn.level = pLevel
+    table.insert(listBonus, bn)
+end
+
+-- Camera
+camera = {x = 0, y = 0}
+
+-- Map
+local map = {}
+map.height = 9
+map.width = 14
+map.grid = {}
+map.grid[1] = {
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    ".............."
+}
+
+map.grid[2] = {
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    ".............."
+}
+
+map.grid[3] = {
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    ".............."
+}
+
+map.grid[4] = {
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    ".............."
+}
+
+map.grid[5] = {
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    ".............."
+}
+
 -- Items
-dots = {0, 0, 0, 24, 24, 0, 0, 0}
-bigdot = {0, 24, 60, 126, 126, 60, 24, 0}
-tomato = {8, 60, 126, 126, 126, 126, 60, 24}
-candy = {15, 18, 100, 244, 236, 94, 30, 12}
+local dots = {0, 0, 0, 24, 24, 0, 0, 0}
+local bigdot = {0, 24, 60, 126, 126, 60, 24, 0}
+local tomato = {8, 60, 126, 126, 126, 126, 60, 24}
+local candy = {15, 18, 100, 244, 236, 94, 30, 12}
 
 -- ghost animations
 local ghost = {}
@@ -55,8 +167,13 @@ ghost.botomRight = {
 ghost.current = ghost.topLeft
 
 -- Pacman
-local pacman = {}
--- Animation
+pacman = {}
+pacman.time = 1
+pacman.x = 1
+pacman.y = 1
+--------------------
+---  Animations  ---
+--------------------
 -- Moving
 pacman.right = {
     {60, 126, 255, 255, 255, 255, 126, 60},
@@ -92,40 +209,97 @@ pacman.death = {
     {66, 36, 129, 66, 66, 129, 36, 66}
 }
 
-pacman.current = pacman.death
-local x,
-    y
-x = 1
-y = 1
+pacman.current = pacman.right
+
+function drawMap()
+    local x,
+        y = 0, camera.y
+    local char
+    for l = 1, map.height do
+        x = camera.x
+        for c = 1, map.width do
+            char = string.sub(map.currentGrid[l], c, c)
+            if char ~= "." then
+                vthumb.Sprite(x, y, {0, 42, 64, 2, 64, 2, 84, 0})
+            end
+            x = x + 8
+        end
+        y = y + 8
+    end
+end
+
+function loadLevel(pLevel)
+    map.currentGrid = map.grid[pLevel]
+    local char
+    for l = 1, map.height do
+        for c = 1, map.width do
+            char = string.sub(map.currentGrid[l], c, c)
+            if char == "." then
+                addDots((c - 1) * 8, (l - 1) * 8, dots, "casual")
+            end
+        end
+    end
+end
+
+function initGame(pLevel)
+    loadLevel(pLevel)
+end
+
+initGame(1)
 
 function v()
-    t = t + 1 / 4
-    if t >= #pacman.current + 1 then
-        t = 1
+    --- Updates ---
+    -- Pacman animation
+    pacman.time = pacman.time + 1 / 4
+    if pacman.time >= #pacman.current + 1 then
+        pacman.time = 1
     end
-    vthumb.Sprite(x, y, pacman.current[math.floor(t)])
+    -- Pacaman moves
+    local camc = math.floor((pacman.x + camera.x) / 8) + 1
+    local caml = math.floor((pacman.y + camera.y) / 8) + 1
+    local c = math.floor(pacman.x / 8) + 1
+    local l = math.floor(pacman.y / 8) + 1
 
-    if vthumb.buttonA.justPressed == true then
-        x = x - 1
-    end
-    if vthumb.buttonB.justPressed == true then
-        x = x + 1
-    end
-
-    if vthumb.buttonR.pressed == true then
-        x = x + 1
+    if vthumb.buttonR.pressed == true and pacman.x < (map.width - 1) * 8 then
+        pacman.x = pacman.x + 1
         pacman.current = pacman.right
-    end
-    if vthumb.buttonL.pressed == true then
-        x = x - 1
+        -- Camera
+        if camc > 5 and string.sub(map.currentGrid[l], c + 4, c + 4) ~= "" then
+            camera.x = camera.x - 1
+        end
+    elseif vthumb.buttonL.pressed == true and pacman.x > 0 then
+        -- Camera
+        if camc < 3 then
+            camera.x = camera.x + 1
+            if c <= 2 then
+                camera.x = 0
+            end
+        end
+        pacman.x = pacman.x - 1
         pacman.current = pacman.left
-    end
-    if vthumb.buttonU.pressed == true then
-        y = y - 1
+    elseif vthumb.buttonU.pressed == true and pacman.y > 0 then
+        -- Camera
+        if caml < 3 and map.currentGrid[l - 2] ~= nil then
+            camera.y = camera.y + 1
+        end
+        pacman.y = pacman.y - 1
         pacman.current = pacman.up
-    end
-    if vthumb.buttonD.pressed == true then
-        y = y + 1
+    elseif vthumb.buttonD.pressed == true and pacman.y < (map.height - 1) * 8 then
+        -- Camera
+        if caml > 2 and map.currentGrid[l + 3] ~= nil then
+            camera.y = camera.y - 1
+        end
+        pacman.y = pacman.y + 1
         pacman.current = pacman.down
+    end
+
+    ----------------
+    --- Drawings ---
+    ----------------
+    drawMap()
+    vthumb.Sprite(camera.x + pacman.x, camera.y + pacman.y, pacman.current[math.floor(pacman.time)])
+    for i = 1, #listElements do
+        local el = listElements[i]
+        vthumb.Sprite(camera.x + el.x, camera.y + el.y, el.sprite)
     end
 end
