@@ -28,6 +28,7 @@ end
 
 function love.update(dt)
     vthumb_engine.update(dt)
+    deltaTime = dt
 end
 
 function love.draw()
