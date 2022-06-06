@@ -28,11 +28,15 @@ end
 
 function love.update(dt)
     vthumb_engine.update(dt)
-    deltaTime = dt
 end
 
 function love.draw()
     vthumb_engine.draw()
+    --[[local c = math.floor(pacman.x / 8) + 1
+    local l = math.floor(pacman.y / 8) + 1
+    love.graphics.print(" " .. l .. ", " .. c)
+    love.graphics.print("camx " .. camera.x .. ", camy " .. camera.y, 0, 20)
+    ]]
 end
 
 function love.keypressed(key)

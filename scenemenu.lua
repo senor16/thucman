@@ -17,7 +17,7 @@ function initMenu()
     menu.ghosts[2] = addGhost(x + 10, y, ghost.botomLeft[1], GHOST_LEVEL_CLYDE)
     menu.ghosts[3] = addGhost(x + 20, y, ghost.botomLeft[1], GHOST_LEVEL_INKY)
     menu.ghosts[4] = addGhost(x + 30, y, ghost.botomLeft[1], GHOST_LEVEL_PINKY)
-    menu.bigDot = addDots(1, y, bigdot, DOT_LEVEL_BIG)
+    menu.bigDot = addDots(1, y, sprites[DOT_LEVEL_BIG], DOT_LEVEL_BIG)
     pacman.x = x - 12
     pacman.y = y
     pacman.current = pacman.left

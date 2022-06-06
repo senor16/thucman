@@ -2,10 +2,10 @@
 sprites = {}
 sprites[WALL] = {0, 60, 66, 90, 90, 66, 60, 0}
 sprites[ROPE] = {0, 0, 0, 255, 0, 0, 0, 0}
-dots = {0, 0, 0, 24, 24, 0, 0, 0}
-bigdot = {0, 24, 60, 126, 126, 60, 24, 0}
-strawbery = {8, 60, 126, 126, 126, 126, 60, 24}
-cherry = {15, 18, 100, 244, 236, 94, 30, 12}
+sprites[DOT_LEVEL_SMALL] = {0, 0, 0, 24, 24, 0, 0, 0}
+sprites[DOT_LEVEL_BIG] = {0, 24, 60, 126, 126, 60, 24, 0}
+sprites[STRAWBERRY] = {8, 60, 126, 126, 126, 126, 60, 24}
+sprites[CHERRY] = {15, 18, 100, 244, 236, 94, 30, 12}
 
 -- ghost animations
 ghost = {}
