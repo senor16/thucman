@@ -32,10 +32,10 @@ end
 
 function love.draw()
     vthumb_engine.draw()
-    --[[local c = math.floor(pacman.x / 8) + 1
-    local l = math.floor(pacman.y / 8) + 1
-    love.graphics.print(" " .. l .. ", " .. c)
-    love.graphics.print("camx " .. camera.x .. ", camy " .. camera.y, 0, 20)
+    --[[love.graphics.print("current " .. string.sub(map.grid[currentLevel][pacman.line], pacman.column, pacman.column))
+    love.graphics.print("x: " .. pacman.x .. "  y: " .. pacman.y, 0, 15)
+    love.graphics.print("line: " .. pacman.line .. ", column: " .. pacman.column, 0, 30)
+    love.graphics.print("lineTo: " .. pacman.lineTo .. ", columnTo: " .. pacman.columnTo, 0, 45)
     ]]
 end
 

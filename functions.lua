@@ -1,6 +1,6 @@
 -- Generic functions
 function isColliding(x1, y1, x2, y2)
-    return x1 < x2 + 8 and x2 < x1 + 8 and y1 < y2 + 8 and y2 < y1 + 8
+    return math.floor(x1 / 8) == math.floor(x2 / 8) and math.floor(y1 / 8) == math.floor(y2 / 8)
 end
 
 function drawChar(px, py, pchr)

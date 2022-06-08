@@ -88,8 +88,12 @@ camera = {x = 0, y = 0}
 -- Pacman
 pacman = {}
 pacman.time = 1
+pacman.line = 1
+pacman.column = 1
+pacman.lineTo = 1
+pacman.columnTo = 1
+pacman.moving = false
 require("sprites")
-pacman.current = pacman.right
 
 -- Functions working on characters
 function updateAnimations()
@@ -202,8 +206,12 @@ function initGame(pLevel)
     listElements = {}
     listGhosts = {}
     loadLevel(pLevel)
-    pacman.x = 10 * 8
-    pacman.y = 7 * 8
+    pacman.column = 11
+    pacman.columnTo = 11
+    pacman.line = 8
+    pacman.lineTo = 8
+    pacman.x = (pacman.column - 1) * 8
+    pacman.y = (pacman.line - 1) * 8
     camera.x = -40
     camera.y = -40
     pacman.state = PACMAN_STATE_NORMAL

@@ -113,11 +113,9 @@ function reArange(el)
     el.y = l * 8
 end
 
-function canWalk(pX, pY)
-    local c = math.floor(pX / 8) + 1
-    local l = math.floor(pY / 8) + 1
-    if c > 0 and c <= map.width and l > 0 and l <= map.height then
-        return string.sub(map.grid[1][l], c, c) ~= WALL
+function canWalk(pL, pC)
+    if pC > 0 and pC <= map.width and pL > 0 and pL <= map.height then        
+        return string.sub(map.grid[1][pL], pC, pC) ~= WALL
     end
     return false
 end

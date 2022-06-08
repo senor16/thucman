@@ -24,11 +24,6 @@ function initMenu()
 end
 
 function updateMenu()
-    if vthumb.buttonA.pressed and vthumb.buttonB.pressed then
-        scene = SCENE_GAME
-        init()
-    end
-
     if menu.vx > 0 then
         pacman.x = pacman.x + 1
     end
@@ -41,6 +36,11 @@ function updateMenu()
     end
     if #listElements <= 0 and pacman.x >= 172 then
         initMenu()
+    end
+
+    if vthumb.buttonA.pressed and vthumb.buttonB.pressed then
+        scene = SCENE_GAME
+        init()
     end
 end
 
