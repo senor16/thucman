@@ -139,10 +139,54 @@ function updateElements()
                     end
                 end
             end
+        elseif scene == SCENE_GAME then
+            if el.type == DOT then
+                if isColliding(el.x, el.y, pacman.x, pacman.y) then
+                    if scene == SCENE_MENU then
+                        menu.vx = 1
+                        pacman.current = pacman.right
+                        for l = 1, #listGhosts do
+                            local gh = listGhosts[l]
+                            gh.anim = ghost.botomRight
+                        end
+                    end
+                    if el.level == DOT_LEVEL_BIG then
+                        pacman.state = PACMAN_STATE_KILL
+                    end
+                    table.remove(listElements, i)
+                    el.del = true
+                end
+            elseif el.type == GHOST then
+                if isColliding(el.x, el.y, pacman.x, pacman.y) then
+                    if pacman.state == PACMAN_STATE_KILL then
+                        table.remove(listElements, i)
+                        el.del = true
+                    end
+                end
+            end
+        end
+    end
+
+    -- Remove elements deleted elements from the corresponding list
+    for i = #listBonus, 1, -1 do
+        local el = listBonus[i]
+        if el.del then
+            table.remove(listBonus, i)
+        end
+    end
+    for i = #listDots, 1, -1 do
+        local el = listDots[i]
+        if el.del then
+            table.remove(listDots, i)
+        end
+    end
+    for i = #listGhosts, 1, -1 do
+        local el = listGhosts[i]
+        if el.del then
+            table.remove(listGhosts, i)
         end
     end
 end
-
 function drawElements(pCamx, pCamy)
     for i = 1, #listElements do
         local el = listElements[i]
