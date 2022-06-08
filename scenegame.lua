@@ -79,6 +79,7 @@ function updateGame()
             pacman.lineTo = pacman.line
             pacman.moving = false
         end
+        reArange(pacman)
     end
 
     --[[

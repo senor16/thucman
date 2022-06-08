@@ -146,14 +146,6 @@ function updateElements()
         elseif scene == SCENE_GAME then
             if el.type == DOT then
                 if isColliding(el.x, el.y, pacman.x, pacman.y) then
-                    if scene == SCENE_MENU then
-                        menu.vx = 1
-                        pacman.current = pacman.right
-                        for l = 1, #listGhosts do
-                            local gh = listGhosts[l]
-                            gh.anim = ghost.botomRight
-                        end
-                    end
                     if el.level == DOT_LEVEL_BIG then
                         pacman.state = PACMAN_STATE_KILL
                     end

@@ -107,14 +107,12 @@ local path = myFinder:getPath(startx, starty, endx, endy)
 
 -- Map functions
 function reArange(el)
-    local c = math.floor(el.x / 8) + 1
-    local l = math.floor(el.y / 8) + 1
-    el.x = c * 8
-    el.y = l * 8
+    el.x = (el.column - 1) * 8
+    el.y = (el.line - 1) * 8
 end
 
 function canWalk(pL, pC)
-    if pC > 0 and pC <= map.width and pL > 0 and pL <= map.height then        
+    if pC > 0 and pC <= map.width and pL > 0 and pL <= map.height then
         return string.sub(map.grid[1][pL], pC, pC) ~= WALL
     end
     return false
