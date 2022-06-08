@@ -13,6 +13,7 @@ function initMenu()
     menu.vx = -1
     local x,
         y = 80, 32
+
     menu.ghosts[1] = addGhost(x, y, ghost.botomLeft[1], GHOST_LEVEL_BLINKY)
     menu.ghosts[2] = addGhost(x + 10, y, ghost.botomLeft[1], GHOST_LEVEL_CLYDE)
     menu.ghosts[3] = addGhost(x + 20, y, ghost.botomLeft[1], GHOST_LEVEL_INKY)

@@ -5,14 +5,14 @@ map.width = 20
 map.grid = {}
 map.grid[1] = {
     "wwwwwwwwwwwwwwwwwwww",
-    "wd...w........w...dw",
-    "w....w........w....w",
-    "e...ww....b...ww...e",
-    "ww......ww-ww.....ww",
+    "wd................dw",
+    "w...ww..........ww.w",
+    "w.........b........w",
+    "e.......ww-ww......e",
     " w..ww..wipcw..ww.w ",
-    "ww...w..wwwww..w..ww",
-    "e....w.........w...e",
-    "w.......wwww.......w",
+    "ww......wwwww.....ww",
+    "e..................e",
+    "w..ww...wwww...ww..w",
     "wd................dw",
     "wwwwwwwwwwwwwwwwwwww"
 }
@@ -67,24 +67,50 @@ map.grid[5] = {
     ".............."
 }
 
--- Usage Example
--- First, set a collision map
-local char
-local mapG = {}
-map.currentGrid = map.grid[1]
-for l = 1, map.height do
-    mapG[l] = {}
-    for c = 1, map.width do
-        char = string.sub(map.currentGrid[l], c, c)
-        if char == WALL then
-            mapG[l][c] = 1
-        else
-            mapG[l][c] = 0
-        end
+-- Map functions
+function getDirections(pLine, pCol, pDir)
+    local directions = {}
+    local grid = map.grid[currentLevel]
+    if string.sub(grid[pLine - 1], pCol, pCol) ~= WALL and pDir ~= "d" then
+        table.insert(directions, "u")
     end
+    if
+        string.sub(grid[pLine + 1], pCol, pCol) ~= WALL and string.sub(grid[pLine + 1], pCol, pCol) ~= ROPE and
+            pDir ~= "u"
+     then
+        table.insert(directions, "d")
+    end
+    if string.sub(grid[pLine], pCol + 1, pCol + 1) ~= WALL and pDir ~= "l" then
+        table.insert(directions, "r")
+    end
+    if string.sub(grid[pLine], pCol - 1, pCol - 1) ~= WALL and pDir ~= "r" then
+        table.insert(directions, "l")
+    end
+    return directions
 end
 
--- Map functions
+function nextDirection(pLine, pCol, pTLine, pTCol, pDir)
+    local shortest = 999
+    local dir = ""
+    local dist = 0
+    for i = 1, #pDir do
+        if pDir[i] == "d" then
+            dist = math.dist(pLine + 1, pCol, pTLine, pTCol)
+        elseif pDir[i] == "u" then
+            dist = math.dist(pLine - 1, pCol, pTLine, pTCol)
+        elseif pDir[i] == "r" then
+            dist = math.dist(pLine, pCol + 1, pTLine, pTCol)
+        elseif pDir[i] == "l" then
+            dist = math.dist(pLine, pCol - 1, pTLine, pTCol)
+        end
+        if dist < shortest then
+            shortest = dist
+            dir = pDir[i]
+        end
+    end
+    return dir
+end
+
 function reArange(el)
     el.x = (el.column - 1) * 8
     el.y = (el.line - 1) * 8
@@ -92,7 +118,7 @@ end
 
 function canWalk(pL, pC)
     if pC > 0 and pC <= map.width and pL > 0 and pL <= map.height then
-        return string.sub(map.grid[1][pL], pC, pC) ~= WALL
+        return string.sub(map.grid[1][pL], pC, pC) ~= WALL and string.sub(map.grid[1][pL], pC, pC) ~= ROPE
     end
     return false
 end
@@ -131,6 +157,10 @@ function loadLevel(pLevel)
                     char == GHOST_LEVEL_PINKY
              then
                 addGhost((c - 1) * 8 + 1, (l - 1) * 8, ghost.botomLeft, char)
+            end
+            if char == ROPE then
+                ghostHome.line = l - 1
+                ghostHome.column = c
             end
         end
     end

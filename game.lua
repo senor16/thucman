@@ -35,7 +35,7 @@ currentLevel = 1
 gameOver = false
 gameWon = false
 hiScore = love.filesystem.read("hiScore.txt")
-
+ghostHome = {line = 0, column = 0}
 function saveHightScore(pScore)
     if pScore ~= nil and pScore > 0 then
         print(love.filesystem.write("hiScore.txt", tostring(pScore)))
@@ -58,7 +58,7 @@ listBonus = {}
 listPlayers = {}
 
 function addElement(pX, pY, pSprite, pType)
-    local el = {x = pX, y = pY, sprite = pSprite, anim = nil, time = 1, del = false, type = pType}
+    local el = {x = pX, y = pY, sprite = pSprite, time = 1, anim = nil, del = false, type = pType}
     table.insert(listElements, el)
     return el
 end
@@ -66,8 +66,18 @@ end
 function addGhost(pX, pY, pSprite, pLevel)
     local gh = addElement(pX, pY, pSprite, GHOST)
     gh.level = pLevel
+    gh.state = GHOST_STATE_SCATTER
+    gh.dir = "l"
+    gh.trans = 1
+    gh.stateTimer = 0
+    gh.moving = false
+    gh.line = pY / 8
+    gh.column = pX / 8
+    gh.lineTo = pY / 8
+    gh.columnTo = pX / 8
     gh.anim = ghost.botomLeft
     table.insert(listGhosts, gh)
+    return gh
 end
 
 function addDots(pX, pY, pSprite, pLevel)
@@ -115,6 +125,85 @@ function updateAnimations()
     end
 end
 
+function updateGhosts(pGhost, pId)
+    local gh = pGhost
+    ghostIT = gh
+    gh.stateTimer = gh.stateTimer + 1 / 30
+    if gh.moving then
+        if gh.columnTo > gh.column then -- To the right
+            gh.x = gh.x + 1
+            if (gh.x / 8) + 1 >= gh.columnTo then
+                gh.moving = false
+                gh.column = gh.columnTo
+            end
+        elseif gh.columnTo < gh.column then -- To the left
+            gh.x = gh.x - 1
+            if (gh.x / 8) + 1 <= gh.columnTo then
+                gh.moving = false
+                gh.column = gh.columnTo
+            end
+        elseif gh.lineTo < gh.line then -- To up
+            gh.y = gh.y - 1
+            if (gh.y / 8) + 1 <= gh.lineTo then
+                gh.line = gh.lineTo
+                gh.moving = false
+            end
+        elseif gh.lineTo > gh.line then -- To bottom
+            gh.y = gh.y + 1
+            if (gh.y / 8) + 1 >= gh.lineTo then
+                gh.line = gh.lineTo
+                gh.moving = false
+            end
+        end
+    else
+        local dir = getDirections(gh.line, gh.column, gh.dir)
+        local nDir = ""
+        -- Chase state
+        if gh.state == GHOST_STATE_CHASE then
+            if gh.level == GHOST_LEVEL_BLINKY then
+                nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
+            end
+        end
+        -- Scatter state
+        if gh.state == GHOST_STATE_SCATTER then
+            if gh.level == GHOST_LEVEL_BLINKY then
+                nDir = nextDirection(gh.line, gh.column, -4, map.width, dir)
+            end
+        end
+        -- Frightened state
+        if gh.state == GHOST_STATE_FRIGHTENED then
+            if gh.level == GHOST_LEVEL_BLINKY then
+                nDir = dir[love.math.random(1, #dir)]
+            end
+        end
+        -- Eaten state
+        if gh.state == GHOST_STATE_EATEN then
+            if gh.level == GHOST_LEVEL_BLINKY then
+                nDir = nextDirection(gh.line, gh.column, ghostHome.line, ghostHome.column, dir)
+            end
+        end
+        if nDir == "l" then
+            gh.columnTo = gh.column - 1
+        elseif nDir == "r" then
+            gh.columnTo = gh.column + 1
+        elseif nDir == "u" then
+            gh.lineTo = gh.line - 1
+        elseif nDir == "d" then
+            gh.lineTo = gh.line + 1
+        end
+        gh.dir = nDir
+        if gh.dir ~= "" then
+            gh.moving = true
+        end
+    end
+
+    if isColliding(gh.x, gh.y, pacman.x, pacman.y) then
+        if pacman.state == PACMAN_STATE_KILL and gh.state == GHOST_STATE_FRIGHTENED then
+            gh.state = GHOST_STATE_EATEN
+        end
+    end
+end
+
 function updateElements()
     for i = #listElements, 1, -1 do
         local el = listElements[i]
@@ -148,17 +237,16 @@ function updateElements()
                 if isColliding(el.x, el.y, pacman.x, pacman.y) then
                     if el.level == DOT_LEVEL_BIG then
                         pacman.state = PACMAN_STATE_KILL
+                        for l = 1, #listGhosts do
+                            local gh = listGhosts[l]
+                            gh.state = GHOST_STATE_FRIGHTENED
+                        end
                     end
                     table.remove(listElements, i)
                     el.del = true
                 end
             elseif el.type == GHOST then
-                if isColliding(el.x, el.y, pacman.x, pacman.y) then
-                    if pacman.state == PACMAN_STATE_KILL then
-                        table.remove(listElements, i)
-                        el.del = true
-                    end
-                end
+                updateGhosts(el, i)
             end
         end
     end
@@ -176,17 +264,13 @@ function updateElements()
             table.remove(listDots, i)
         end
     end
-    for i = #listGhosts, 1, -1 do
-        local el = listGhosts[i]
-        if el.del then
-            table.remove(listGhosts, i)
-        end
-    end
 end
 function drawElements(pCamx, pCamy)
     for i = 1, #listElements do
         local el = listElements[i]
-        vthumb.Sprite(pCamx + el.x, pCamy + el.y, el.sprite)
+        if el.sprite ~= nil then
+            vthumb.Sprite(pCamx + el.x, pCamy + el.y, el.sprite)
+        end
     end
     vthumb.Sprite(pCamx + pacman.x, pCamy + pacman.y, pacman.current[math.floor(pacman.time)])
 end
@@ -205,7 +289,7 @@ function initGame(pLevel)
     pacman.x = (pacman.column - 1) * 8
     pacman.y = (pacman.line - 1) * 8
     camera.x = -40
-    camera.y = -40
+    camera.y = -24
     pacman.state = PACMAN_STATE_NORMAL
 end
 
