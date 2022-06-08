@@ -84,27 +84,6 @@ for l = 1, map.height do
     end
 end
 
--- Value for walkable tiles
-local walkable = 0
-
--- Library setup
-local Grid = require("lib/jumper.grid") -- The grid class
-local Pathfinder = require("lib/jumper.pathfinder") -- The pathfinder class
-
--- Creates a grid object
-local grid = Grid(mapG)
--- Creates a pathfinder object using Jump Point Search
-local myFinder = Pathfinder(grid, "BFS", walkable)
-myFinder:setMode("ORTHOGONAL")
--- Define start and goal locations coordinates
-local startx,
-    starty = 5, 8
-local endx,
-    endy = 2, 4
-
--- Calculates the path, and its length
-local path = myFinder:getPath(startx, starty, endx, endy)
-
 -- Map functions
 function reArange(el)
     el.x = (el.column - 1) * 8
@@ -136,18 +115,6 @@ function drawMap()
             x = x + 8
         end
         y = y + 8
-    end
-end
-
-function drawPath()
-    if path then
-        for node, count in path:nodes() do
-            vthumb.Sprite(
-                (node:getX() - 1) * 8 + camera.x,
-                (node:getY() - 1) * 8 + camera.y,
-                {0, 0, 24, 48, 12, 24, 0, 0}
-            )
-        end
     end
 end
 

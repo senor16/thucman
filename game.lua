@@ -235,6 +235,5 @@ function v()
         drawMenu()
     elseif scene == SCENE_GAME then
         drawGame()
-        drawPath()
     end
 end
