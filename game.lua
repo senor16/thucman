@@ -71,10 +71,11 @@ end
 function addGhost(pX, pY, pSprite, pLevel)
     local gh = addElement(pX, pY, pSprite, GHOST)
     gh.level = pLevel
-    gh.state = GHOST_STATE_CHASE
+    gh.state = GHOST_STATE_SCATTER
     gh.dir = "l"
     gh.trans = 1
     gh.stateTimer = 0
+    gh.blueTimer = 0
     gh.moving = false
     gh.line = math.ceil(pY / 8)
     gh.column = math.ceil(pX / 8)
@@ -136,7 +137,13 @@ end
 
 function updateGhosts(pGhost)
     local gh = pGhost
-    gh.stateTimer = gh.stateTimer + 1 / 30
+    if gh.state == GHOST_STATE_FRIGHTENED then
+        gh.blueTimer = gh.blueTimer + 1 / love.timer.getFPS()
+    end
+    if gh.state == GHOST_STATE_SCATTER or gh.state == GHOST_FORCE_CHASE then
+        gh.stateTimer = gh.stateTimer + 1 / love.timer.getFPS()
+    end
+
     if gh.moving then
         if gh.columnTo > gh.column then -- To the right
             gh.x = gh.x + 1
@@ -168,6 +175,21 @@ function updateGhosts(pGhost)
         local nDir = ""
         -- Chase state
         if gh.state == GHOST_STATE_CHASE then
+            if gh.trans < #GHOST_TRANSITIONS then
+                local chaseTime = GHOST_TRANSITIONS[currentLevel][gh.trans][2]
+                if gh.stateTimer >= chaseTime and chaseTime > 0 then
+                    gh.dir = goBack(gh.dir)
+                    gh.state = GHOST_STATE_SCATTER
+                    if gh.level == GHOST_LEVEL_BLINKY and #listDots <= GHOST_FORCE_CHASE[currentLevel] then
+                        gh.state = GHOST_STATE_CHASE
+                    end
+                    gh.trans = gh.trans + 1
+                    if gh.trans > #GHOST_TRANSITIONS[currentLevel] then
+                        gh.trans = #GHOST_TRANSITIONS[currentLevel]
+                    end
+                    gh.stateTimer = 0
+                end
+            end
             if gh.level == GHOST_LEVEL_BLINKY then -- Blinky
                 nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
             elseif gh.level == GHOST_LEVEL_PINKY then -- Pinky
@@ -185,6 +207,7 @@ function updateGhosts(pGhost)
                     nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
                 else
                     gh.state = GHOST_STATE_SCATTER
+                    gh.dir = goBack(gh.dir)
                 end
             elseif gh.level == GHOST_LEVEL_INKY then -- Inky
                 local pL,
@@ -214,6 +237,14 @@ function updateGhosts(pGhost)
         end
         -- Scatter state
         if gh.state == GHOST_STATE_SCATTER then
+            if gh.trans < #GHOST_TRANSITIONS then
+                local time = GHOST_TRANSITIONS[currentLevel][gh.trans][1]
+                if gh.stateTimer >= time then
+                    --gh.dir = goBack(gh.dir)
+                    -- gh.state = GHOST_STATE_CHASE
+                    gh.stateTimer = 0
+                end
+            end
             if gh.level == GHOST_LEVEL_BLINKY then -- Blinky
                 nDir = nextDirection(gh.line, gh.column, -4, map.width, dir)
             elseif gh.level == GHOST_LEVEL_PINKY then -- Pinky
@@ -227,6 +258,9 @@ function updateGhosts(pGhost)
         -- Frightened state
         if gh.state == GHOST_STATE_FRIGHTENED then
             nDir = dir[love.math.random(1, #dir)]
+            if gh.blueTimer >= GHOST_BLUE_TIME[currentLevel] then
+                gh.state = gh.prevState
+            end
         end
         -- Eaten state
         if gh.state == GHOST_STATE_EATEN then
@@ -304,7 +338,9 @@ function updateElements()
                         pacman.state = PACMAN_STATE_KILL
                         for l = 1, #listGhosts do
                             local gh = listGhosts[l]
+                            gh.prevState = gh.state
                             gh.state = GHOST_STATE_FRIGHTENED
+                            gh.dir = goBack(gh.dir)
                         end
                     end
                     table.remove(listElements, i)

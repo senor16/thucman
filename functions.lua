@@ -57,3 +57,17 @@ function playSound(pSound, pCanStop)
         end
     end
 end
+
+function goBack(pDir)
+    local dir = ""
+    if pDir == "d" then
+        dir = "u"
+    elseif pDir == "u" then
+        dir = "d"
+    elseif pDir == "r" then
+        dir = "l"
+    elseif pDir == "l" then
+        dir = "r"
+    end
+    return dir
+end

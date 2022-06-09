@@ -72,10 +72,10 @@ function getDirections(pLine, pCol, pDir, pState)
     local directions = {}
     local grid = map.grid[currentLevel]
 
-    if string.sub(grid[pLine - 1], pCol, pCol) ~= WALL and pDir ~= "d" then
+    if grid[pLine - 1] ~= nil and string.sub(grid[pLine - 1], pCol, pCol) ~= WALL and pDir ~= "d" then
         table.insert(directions, "u")
     end
-    if string.sub(grid[pLine + 1], pCol, pCol) ~= WALL and pDir ~= "u" then
+    if grid[pLine + 1] ~= nil and string.sub(grid[pLine + 1], pCol, pCol) ~= WALL and pDir ~= "u" then
         if string.sub(grid[pLine + 1], pCol, pCol) == ROPE then
             if pState == GHOST_STATE_EATEN then
                 table.insert(directions, "d")
@@ -84,10 +84,10 @@ function getDirections(pLine, pCol, pDir, pState)
             table.insert(directions, "d")
         end
     end
-    if string.sub(grid[pLine], pCol + 1, pCol + 1) ~= WALL and pDir ~= "l" then
+    if grid[pLine] ~= nil and string.sub(grid[pLine], pCol + 1, pCol + 1) ~= WALL and pDir ~= "l" then
         table.insert(directions, "r")
     end
-    if string.sub(grid[pLine], pCol - 1, pCol - 1) ~= WALL and pDir ~= "r" then
+    if grid[pLine] ~= nil and string.sub(grid[pLine], pCol - 1, pCol - 1) ~= WALL and pDir ~= "r" then
         table.insert(directions, "l")
     end
     return directions

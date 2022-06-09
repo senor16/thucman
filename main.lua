@@ -43,11 +43,24 @@ function love.draw()
             y = xycor[k].y
             x = xycor[k].x
             love.graphics.print("current " .. ghost.level, x, y)
-            love.graphics.print("x: " .. ghost.x .. "  y: " .. ghost.y, x, y + 15)
+            y = y + 15
+            love.graphics.print("x: " .. ghost.x .. "  y: " .. ghost.y, x, y)
             love.graphics.print("line: " .. ghost.line .. ", column: " .. ghost.column, x, y + 30)
             love.graphics.print("lineTo: " .. ghost.lineTo .. ", columnTo: " .. ghost.columnTo, x, y + 45)
-            love.graphics.print("state: " .. ghost.state, x, y + 60)
-            love.graphics.print("state timer: " .. ghost.stateTimer, x, y + 75)
+            love.graphics.print("state: " .. ghost.state .. ", Level : " .. currentLevel, x, y + 60)
+            love.graphics.print(
+                "state timer: " .. math.floor(ghost.stateTimer) .. ", blue timer: " .. math.floor(ghost.blueTimer),
+                x,
+                y + 75
+            )
+            love.graphics.print(
+                "State Goal : Scatter" ..
+                    GHOST_TRANSITIONS[currentLevel][ghost.trans][1] ..
+                        ", Chase " .. GHOST_TRANSITIONS[currentLevel][ghost.trans][2],
+                x,
+                y + 90
+            )
+            love.graphics.print("Trans : " .. ghost.trans, x, y + 105)
         end
         y = y + 200
         love.graphics.print("x: " .. pacman.x .. "  y: " .. pacman.y, x, y + 15)
