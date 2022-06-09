@@ -6,7 +6,7 @@ map.grid = {}
 map.grid[1] = {
     "wwwwwwwwwwwwwwwwwwww",
     "wd................dw",
-    "w...ww..........ww.w",
+    "w.ww............ww.w",
     "w.........b........w",
     "e.......ww-ww......e",
     " w..ww..wipcw..ww.w ",

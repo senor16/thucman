@@ -70,7 +70,7 @@ end
 function addGhost(pX, pY, pSprite, pLevel)
     local gh = addElement(pX, pY, pSprite, GHOST)
     gh.level = pLevel
-    gh.state = GHOST_STATE_SCATTER
+    gh.state = GHOST_STATE_CHASE
     gh.dir = "l"
     gh.trans = 1
     gh.stateTimer = 0
@@ -164,21 +164,31 @@ function updateGhosts(pGhost, pId)
         local nDir = ""
         -- Chase state
         if gh.state == GHOST_STATE_CHASE then
-            if gh.level == GHOST_LEVEL_BLINKY then
+            if gh.level == GHOST_LEVEL_BLINKY then -- Blinky
                 nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
+            elseif gh.level == GHOST_LEVEL_PINKY then -- Pinky
+                if pacman.current == pacman.left then
+                    nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column - 4, dir)
+                elseif pacman.current == pacman.right then
+                    nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column + 4, dir)
+                elseif pacman.current == pacman.up then
+                    nDir = nextDirection(gh.line, gh.column, pacman.line - 4, pacman.column - 4, dir)
+                elseif pacman.current == pacman.down then
+                    nDir = nextDirection(gh.line, gh.column, pacman.line + 4, pacman.column, dir)
+                end
             end
         end
         -- Scatter state
         if gh.state == GHOST_STATE_SCATTER then
             if gh.level == GHOST_LEVEL_BLINKY then
                 nDir = nextDirection(gh.line, gh.column, -4, map.width, dir)
+            elseif gh.level == GHOST_LEVEL_PINKY then
+                nDir = nextDirection(gh.line, gh.column, -4, 0, dir)
             end
         end
         -- Frightened state
         if gh.state == GHOST_STATE_FRIGHTENED then
-            if gh.level == GHOST_LEVEL_BLINKY then
-                nDir = dir[love.math.random(1, #dir)]
-            end
+            nDir = dir[love.math.random(1, #dir)]
         end
         -- Eaten state
         if gh.state == GHOST_STATE_EATEN then
