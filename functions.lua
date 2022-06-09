@@ -46,3 +46,14 @@ function drawText(pX, pY, pText)
         end
     end
 end
+
+function playSound(pSound, pCanStop)
+    if pCanStop == nil or pCanStop == true then
+        love.audio.stop(pSound)
+        love.audio.play(pSound)
+    else
+        if not pSound:isPlaying() then
+            love.audio.play(pSound)
+        end
+    end
+end

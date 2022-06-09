@@ -29,6 +29,10 @@ require("scenemenu")
 require("functions")
 require("scenegame")
 
+-- Musics
+eat = love.audio.newSource("sfx/eat.wav", "static")
+dead = love.audio.newSource("sfx/dead.wav", "static")
+
 -- Game variables
 scene = SCENE_MENU
 currentLevel = 1
@@ -200,6 +204,11 @@ function updateGhosts(pGhost, pId)
     if isColliding(gh.x, gh.y, pacman.x, pacman.y) then
         if pacman.state == PACMAN_STATE_KILL and gh.state == GHOST_STATE_FRIGHTENED then
             gh.state = GHOST_STATE_EATEN
+        else
+            playSound(dead, false)
+            pacman.current = pacman.dead
+            pacman.time = 1
+            pacman.state = PACMAN_STATE_DEAD
         end
     end
 end
@@ -210,6 +219,7 @@ function updateElements()
         if scene == SCENE_MENU then
             if el.type == DOT then
                 if isColliding(el.x - 6, el.y, pacman.x, pacman.y) then
+                    playSound(eat)
                     if scene == SCENE_MENU then
                         menu.vx = 1
                         pacman.current = pacman.right
@@ -227,6 +237,7 @@ function updateElements()
             elseif el.type == GHOST then
                 if isColliding(el.x + 6, el.y, pacman.x, pacman.y) then
                     if pacman.state == PACMAN_STATE_KILL then
+                        playSound(eat)
                         table.remove(listElements, i)
                         el.del = true
                     end
@@ -235,6 +246,7 @@ function updateElements()
         elseif scene == SCENE_GAME then
             if el.type == DOT then
                 if isColliding(el.x, el.y, pacman.x, pacman.y) then
+                    playSound(eat)
                     if el.level == DOT_LEVEL_BIG then
                         pacman.state = PACMAN_STATE_KILL
                         for l = 1, #listGhosts do
