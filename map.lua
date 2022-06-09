@@ -71,6 +71,7 @@ map.grid[5] = {
 function getDirections(pLine, pCol, pDir, pState)
     local directions = {}
     local grid = map.grid[currentLevel]
+
     if string.sub(grid[pLine - 1], pCol, pCol) ~= WALL and pDir ~= "d" then
         table.insert(directions, "u")
     end

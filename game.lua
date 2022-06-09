@@ -76,10 +76,10 @@ function addGhost(pX, pY, pSprite, pLevel)
     gh.trans = 1
     gh.stateTimer = 0
     gh.moving = false
-    gh.line = pY / 8
-    gh.column = pX / 8
-    gh.lineTo = pY / 8
-    gh.columnTo = pX / 8
+    gh.line = math.ceil(pY / 8)
+    gh.column = math.ceil(pX / 8)
+    gh.lineTo = gh.line
+    gh.columnTo = gh.column
     gh.anim = ghost.botomLeft
     table.insert(listGhosts, gh)
     if pLevel == GHOST_LEVEL_BLINKY then
@@ -134,7 +134,7 @@ function updateAnimations()
     end
 end
 
-function updateGhosts(pGhost, pId)
+function updateGhosts(pGhost)
     local gh = pGhost
     gh.stateTimer = gh.stateTimer + 1 / 30
     if gh.moving then
@@ -169,23 +169,23 @@ function updateGhosts(pGhost, pId)
         -- Chase state
         if gh.state == GHOST_STATE_CHASE then
             if gh.level == GHOST_LEVEL_BLINKY then -- Blinky
-                --nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
+                nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
             elseif gh.level == GHOST_LEVEL_PINKY then -- Pinky
-                -- if pacman.current == pacman.left then
-                --     nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column - 4, dir)
-                -- elseif pacman.current == pacman.right then
-                --     nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column + 4, dir)
-                -- elseif pacman.current == pacman.up then
-                --     nDir = nextDirection(gh.line, gh.column, pacman.line - 4, pacman.column - 4, dir)
-                -- elseif pacman.current == pacman.down then
-                --     nDir = nextDirection(gh.line, gh.column, pacman.line + 4, pacman.column, dir)
-                -- end
+                if pacman.current == pacman.left then
+                    nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column - 4, dir)
+                elseif pacman.current == pacman.right then
+                    nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column + 4, dir)
+                elseif pacman.current == pacman.up then
+                    nDir = nextDirection(gh.line, gh.column, pacman.line - 4, pacman.column - 4, dir)
+                elseif pacman.current == pacman.down then
+                    nDir = nextDirection(gh.line, gh.column, pacman.line + 4, pacman.column, dir)
+                end
             elseif gh.level == GHOST_LEVEL_CLYDE then -- Clyde
-                -- if math.dist(gh.column, gh.line, pacman.column, pacman.line) >= 8 then
-                --     nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
-                -- else
-                --     gh.state = GHOST_STATE_SCATTER
-                -- end
+                if math.dist(gh.column, gh.line, pacman.column, pacman.line) >= 8 then
+                    nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
+                else
+                    gh.state = GHOST_STATE_SCATTER
+                end
             elseif gh.level == GHOST_LEVEL_INKY then -- Inky
                 local pL,
                     pC = 0, 0
@@ -202,22 +202,14 @@ function updateGhosts(pGhost, pId)
                     pL,
                         pC = pacman.line + 2, pacman.column
                 end
-                local tL,
-                    tC = 0, 0
-                local bC,
-                    bL = listGhosts[blinkyId].line, listGhosts[blinkyId].column
-                local dist = math.dist(pC, pL, bC, bL)
-                if tL <= bL then
-                    tL = pL - dist
-                else
-                    tL = pL + dist
-                end
-                if tC <= bC then
-                    tC = pC - dist
-                else
-                    tC = pC + dist
-                end
-            --nDir = nextDirection(gh.line, gh.column, tL, tC, dir)
+                local tC,
+                    tL = 0, 0
+                local bL,
+                    bC = listGhosts[blinkyId].line, listGhosts[blinkyId].column
+
+                tL = pL + (pL - bL)
+                tC = pC + (pC - bC)
+                nDir = nextDirection(gh.line, gh.column, tL, tC, dir)
             end
         end
         -- Scatter state
@@ -319,7 +311,7 @@ function updateElements()
                     el.del = true
                 end
             elseif el.type == GHOST then
-                updateGhosts(el, i)
+                updateGhosts(el)
             end
         end
     end

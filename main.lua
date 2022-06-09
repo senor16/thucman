@@ -35,25 +35,25 @@ end
 
 function love.draw()
     vthumb_engine.draw()
-    local x,
-        y = 0, 0
-    local xycor = {{x = 0, y = 0}, {x = 600, y = 0}, {x = 0, y = 200}, {x = 600, y = 200}}
-    for k, ghost in pairs(listGhosts) do
-        y = xycor[k].y
-        x = xycor[k].x
-        love.graphics.print("current " .. ghost.level, x, y)
-        love.graphics.print("x: " .. ghost.x .. "  y: " .. ghost.y, x, y + 15)
-        love.graphics.print("line: " .. ghost.line .. ", column: " .. ghost.column, x, y + 30)
-        love.graphics.print("lineTo: " .. ghost.lineTo .. ", columnTo: " .. ghost.columnTo, x, y + 45)
-        love.graphics.print("state: " .. ghost.state, x, y + 60)
-        love.graphics.print("state timer: " .. ghost.stateTimer, x, y + 75)
+    if scene == SCENE_GAME then
+        local x,
+            y = 0, 0
+        local xycor = {{x = 0, y = 0}, {x = 600, y = 0}, {x = 0, y = 200}, {x = 600, y = 200}}
+        for k, ghost in pairs(listGhosts) do
+            y = xycor[k].y
+            x = xycor[k].x
+            love.graphics.print("current " .. ghost.level, x, y)
+            love.graphics.print("x: " .. ghost.x .. "  y: " .. ghost.y, x, y + 15)
+            love.graphics.print("line: " .. ghost.line .. ", column: " .. ghost.column, x, y + 30)
+            love.graphics.print("lineTo: " .. ghost.lineTo .. ", columnTo: " .. ghost.columnTo, x, y + 45)
+            love.graphics.print("state: " .. ghost.state, x, y + 60)
+            love.graphics.print("state timer: " .. ghost.stateTimer, x, y + 75)
+        end
+        y = y + 200
+        love.graphics.print("x: " .. pacman.x .. "  y: " .. pacman.y, x, y + 15)
+        love.graphics.print("line: " .. pacman.line .. ", column: " .. pacman.column, x, y + 30)
+        love.graphics.print("lineTo: " .. pacman.lineTo .. ", columnTo: " .. pacman.columnTo, x, y + 45)
     end
-    love.graphics.print("Moving : " .. tostring(pacman.moving))
-    love.graphics.print("x: " .. pacman.x .. "  y: " .. pacman.y, x, y + 15)
-    love.graphics.print("line: " .. pacman.line .. ", column: " .. pacman.column, x, y + 30)
-    love.graphics.print("lineTo: " .. pacman.lineTo .. ", columnTo: " .. pacman.columnTo, x, y + 45)
-    --    love.graphics.print("state: " .. pacman.state, x, y + 60)
-    --  love.graphics.print("state timer: " .. pacman.stateTimer, x, y + 75)
 end
 
 function love.keypressed(key)
