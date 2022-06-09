@@ -35,15 +35,18 @@ end
 
 function love.draw()
     vthumb_engine.draw()
-    if ghostIT ~= nil then
-        love.graphics.print(
-            "current " .. string.sub(map.grid[currentLevel][ghostIT.line], ghostIT.column, ghostIT.column)
-        )
-        love.graphics.print("x: " .. ghostIT.x .. "  y: " .. ghostIT.y, 0, 15)
-        love.graphics.print("line: " .. ghostIT.line .. ", column: " .. ghostIT.column, 0, 30)
-        love.graphics.print("lineTo: " .. ghostIT.lineTo .. ", columnTo: " .. ghostIT.columnTo, 0, 45)
-        love.graphics.print("state: " .. ghostIT.state, 0, 60)
-        love.graphics.print("state timer: " .. ghostIT.stateTimer, 0, 75)
+    local x,
+        y = 0, 0
+    local xycor = {{x = 0, y = 0}, {x = 600, y = 0}, {x = 0, y = 200}, {x = 600, y = 200}}
+    for k, ghost in pairs(listGhosts) do
+        y = xycor[k].y
+        x = xycor[k].x
+        love.graphics.print("current " .. ghost.level, x, y)
+        love.graphics.print("x: " .. ghost.x .. "  y: " .. ghost.y, x, y + 15)
+        love.graphics.print("line: " .. ghost.line .. ", column: " .. ghost.column, x, y + 30)
+        love.graphics.print("lineTo: " .. ghost.lineTo .. ", columnTo: " .. ghost.columnTo, x, y + 45)
+        love.graphics.print("state: " .. ghost.state, x, y + 60)
+        love.graphics.print("state timer: " .. ghost.stateTimer, x, y + 75)
     end
 end
 

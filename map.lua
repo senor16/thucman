@@ -11,9 +11,9 @@ map.grid[1] = {
     "e.......ww-ww......e",
     " w..ww..wipcw..ww.w ",
     "e.......wwwww......e",
-    "w..................w",
+    "w.................w",
     "w.ww....wwww....ww.w",
-    "wd................dw",
+    "wd................@dw",
     "wwwwwwwwwwwwwwwwwwww"
 }
 
@@ -160,6 +160,9 @@ function loadLevel(pLevel)
                     char == GHOST_LEVEL_PINKY
              then
                 addGhost((c - 1) * 8 + 1, (l - 1) * 8, ghost.botomLeft, char)
+            elseif char == PACMAN then
+                pacman.line = l
+                pacman.column = c
             end
             if char == ROPE then
                 ghostHome.line = l - 1

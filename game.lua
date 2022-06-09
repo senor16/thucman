@@ -70,7 +70,7 @@ end
 function addGhost(pX, pY, pSprite, pLevel)
     local gh = addElement(pX, pY, pSprite, GHOST)
     gh.level = pLevel
-    gh.state = GHOST_STATE_SCATTER
+    gh.state = GHOST_STATE_CHASE
     gh.dir = "l"
     gh.trans = 1
     gh.stateTimer = 0
@@ -131,7 +131,6 @@ end
 
 function updateGhosts(pGhost, pId)
     local gh = pGhost
-    ghostIT = gh
     gh.stateTimer = gh.stateTimer + 1 / 30
     if gh.moving then
         if gh.columnTo > gh.column then -- To the right
@@ -165,16 +164,22 @@ function updateGhosts(pGhost, pId)
         -- Chase state
         if gh.state == GHOST_STATE_CHASE then
             if gh.level == GHOST_LEVEL_BLINKY then -- Blinky
-                nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
+                --nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
             elseif gh.level == GHOST_LEVEL_PINKY then -- Pinky
-                if pacman.current == pacman.left then
-                    nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column - 4, dir)
-                elseif pacman.current == pacman.right then
-                    nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column + 4, dir)
-                elseif pacman.current == pacman.up then
-                    nDir = nextDirection(gh.line, gh.column, pacman.line - 4, pacman.column - 4, dir)
-                elseif pacman.current == pacman.down then
-                    nDir = nextDirection(gh.line, gh.column, pacman.line + 4, pacman.column, dir)
+                -- if pacman.current == pacman.left then
+                --     nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column - 4, dir)
+                -- elseif pacman.current == pacman.right then
+                --     nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column + 4, dir)
+                -- elseif pacman.current == pacman.up then
+                --     nDir = nextDirection(gh.line, gh.column, pacman.line - 4, pacman.column - 4, dir)
+                -- elseif pacman.current == pacman.down then
+                --     nDir = nextDirection(gh.line, gh.column, pacman.line + 4, pacman.column, dir)
+                -- end
+            elseif gh.level == GHOST_LEVEL_CLYDE then -- Clyde
+                if math.dist(gh.column, gh.line, pacman.column, pacman.line) >= 8 then
+                    nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
+                else
+                    gh.state = GHOST_STATE_SCATTER
                 end
             end
         end
@@ -306,12 +311,12 @@ function initGame(pLevel)
     listElements = {}
     listGhosts = {}
     loadLevel(pLevel)
-    pacman.column = 11
-    pacman.columnTo = 11
-    pacman.line = 8
-    pacman.lineTo = 8
-    pacman.x = (pacman.column - 1) * 8
-    pacman.y = (pacman.line - 1) * 8
+    -- pacman.column = 11
+    -- pacman.columnTo = 11
+    -- pacman.line = 8
+    -- pacman.lineTo = 8
+    -- pacman.x = (pacman.column - 1) * 8
+    -- pacman.y = (pacman.line - 1) * 8
     camera.x = -40
     camera.y = -40
     pacman.state = PACMAN_STATE_NORMAL
