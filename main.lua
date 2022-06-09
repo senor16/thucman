@@ -48,6 +48,12 @@ function love.draw()
         love.graphics.print("state: " .. ghost.state, x, y + 60)
         love.graphics.print("state timer: " .. ghost.stateTimer, x, y + 75)
     end
+    love.graphics.print("Moving : " .. tostring(pacman.moving))
+    love.graphics.print("x: " .. pacman.x .. "  y: " .. pacman.y, x, y + 15)
+    love.graphics.print("line: " .. pacman.line .. ", column: " .. pacman.column, x, y + 30)
+    love.graphics.print("lineTo: " .. pacman.lineTo .. ", columnTo: " .. pacman.columnTo, x, y + 45)
+    --    love.graphics.print("state: " .. pacman.state, x, y + 60)
+    --  love.graphics.print("state timer: " .. pacman.stateTimer, x, y + 75)
 end
 
 function love.keypressed(key)

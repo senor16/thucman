@@ -8,6 +8,66 @@ function updateGame()
         oldY = pacman.x, pacman.y
     local oldCamX,
         oldCamY = camera.x, camera.y
+
+    if vthumb.buttonR.pressed then
+        pacman.nextDir = "r"
+    elseif vthumb.buttonL.pressed then
+        pacman.nextDir = "l"
+    elseif vthumb.buttonU.pressed then
+        pacman.nextDir = "u"
+    elseif vthumb.buttonD.pressed then
+        pacman.nextDir = "d"
+    end
+    if pacman.x % 8 == 0 and pacman.y % 8 == 0 then
+        if pacman.nextDir == "l" then
+            pacman.columnTo = pacman.column - 1
+            pacman.current = pacman.left
+            pacman.moving = true
+        elseif pacman.nextDir == "r" then
+            pacman.columnTo = pacman.column + 1
+            pacman.current = pacman.right
+            pacman.moving = true
+        elseif pacman.nextDir == "u" then
+            pacman.lineTo = pacman.lineTo - 1
+            pacman.current = pacman.up
+            pacman.moving = true
+        elseif pacman.nextDir == "d" then
+            pacman.lineTo = pacman.line + 1
+            pacman.current = pacman.down
+            pacman.moving = true
+        end
+        if not canWalk(pacman.lineTo, pacman.columnTo) then
+            pacman.columnTo = pacman.column
+            pacman.lineTo = pacman.line
+            pacman.moving = false
+            reArange(pacman)
+        end
+    end
+
+    if not pacman.moving then
+        if pacman.current == pacman.right then -- Right
+            if canWalk(pacman.line, pacman.column + 1) then
+                pacman.columnTo = pacman.column + 1
+                pacman.moving = true
+            end
+        elseif pacman.current == pacman.left then -- Left
+            if canWalk(pacman.line, pacman.column - 1) then
+                pacman.columnTo = pacman.column - 1
+                pacman.moving = true
+            end
+        elseif pacman.current == pacman.down then -- Down
+            if canWalk(pacman.line + 1, pacman.column) then
+                pacman.lineTo = pacman.line + 1
+                pacman.moving = true
+            end
+        elseif pacman.current == pacman.up then -- Up
+            if canWalk(pacman.line - 1, pacman.column) then
+                pacman.lineTo = pacman.line - 1
+                pacman.moving = true
+            end
+        end
+    end
+
     if pacman.moving then
         if pacman.columnTo > pacman.column then -- To the right
             pacman.x = pacman.x + 1
@@ -53,30 +113,17 @@ function updateGame()
                 camera.y = camera.y - 1
             end
         end
-    else
-        if vthumb.buttonR.pressed then
-            pacman.columnTo = pacman.columnTo + 1
-            pacman.current = pacman.right
-            pacman.moving = true
-        elseif vthumb.buttonL.pressed then
-            pacman.columnTo = pacman.columnTo - 1
-            pacman.current = pacman.left
-            pacman.moving = true
-        elseif vthumb.buttonU.pressed then
-            pacman.lineTo = pacman.lineTo - 1
-            pacman.current = pacman.up
-            pacman.moving = true
-        elseif vthumb.buttonD.pressed then
-            pacman.lineTo = pacman.lineTo + 1
-            pacman.current = pacman.down
-            pacman.moving = true
+        if pacman.column <= 0 then
+            camera.x = -88
+            pacman.column = map.width
+            pacman.columnTo = map.width
+            reArange(pacman)
+        elseif pacman.column > map.width then
+            pacman.column = 1
+            pacman.columnTo = 1
+            camera.x = 1
+            reArange(pacman)
         end
-        if not canWalk(pacman.lineTo, pacman.columnTo) then
-            pacman.columnTo = pacman.column
-            pacman.lineTo = pacman.line
-            pacman.moving = false
-        end
-        reArange(pacman)
     end
 end
 

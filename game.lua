@@ -40,6 +40,7 @@ gameOver = false
 gameWon = false
 hiScore = love.filesystem.read("hiScore.txt")
 ghostHome = {line = 0, column = 0}
+blinkyId = 0
 function saveHightScore(pScore)
     if pScore ~= nil and pScore > 0 then
         print(love.filesystem.write("hiScore.txt", tostring(pScore)))
@@ -81,6 +82,9 @@ function addGhost(pX, pY, pSprite, pLevel)
     gh.columnTo = pX / 8
     gh.anim = ghost.botomLeft
     table.insert(listGhosts, gh)
+    if pLevel == GHOST_LEVEL_BLINKY then
+        blinkyId = #listGhosts
+    end
     return gh
 end
 
@@ -101,6 +105,7 @@ camera = {x = 0, y = 0}
 
 -- Pacman
 pacman = {}
+pacman.nextDir = ""
 pacman.time = 1
 pacman.line = 1
 pacman.column = 1
@@ -176,11 +181,43 @@ function updateGhosts(pGhost, pId)
                 --     nDir = nextDirection(gh.line, gh.column, pacman.line + 4, pacman.column, dir)
                 -- end
             elseif gh.level == GHOST_LEVEL_CLYDE then -- Clyde
-                if math.dist(gh.column, gh.line, pacman.column, pacman.line) >= 8 then
-                    nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
-                else
-                    gh.state = GHOST_STATE_SCATTER
+                -- if math.dist(gh.column, gh.line, pacman.column, pacman.line) >= 8 then
+                --     nDir = nextDirection(gh.line, gh.column, pacman.line, pacman.column, dir)
+                -- else
+                --     gh.state = GHOST_STATE_SCATTER
+                -- end
+            elseif gh.level == GHOST_LEVEL_INKY then -- Inky
+                local pL,
+                    pC = 0, 0
+                if pacman.current == pacman.left then
+                    pL,
+                        pC = pacman.line, pacman.column - 2
+                elseif pacman.current == pacman.right then
+                    pL,
+                        pC = pacman.line, pacman.column + 2
+                elseif pacman.current == pacman.up then
+                    pL,
+                        pC = pacman.line - 2, pacman.column - 2
+                elseif pacman.current == pacman.down then
+                    pL,
+                        pC = pacman.line + 2, pacman.column
                 end
+                local tL,
+                    tC = 0, 0
+                local bC,
+                    bL = listGhosts[blinkyId].line, listGhosts[blinkyId].column
+                local dist = math.dist(pC, pL, bC, bL)
+                if tL <= bL then
+                    tL = pL - dist
+                else
+                    tL = pL + dist
+                end
+                if tC <= bC then
+                    tC = pC - dist
+                else
+                    tC = pC + dist
+                end
+            --nDir = nextDirection(gh.line, gh.column, tL, tC, dir)
             end
         end
         -- Scatter state
@@ -226,6 +263,13 @@ function updateGhosts(pGhost, pId)
             pacman.current = pacman.dead
             pacman.time = 1
             pacman.state = PACMAN_STATE_DEAD
+        end
+        if gh.column <= 0 then
+            gh.column = map.width
+            gh.columnTo = map.width
+        elseif gh.column > map.width then
+            gh.column = 1
+            gh.columnTo = 1
         end
     end
 end
@@ -311,12 +355,6 @@ function initGame(pLevel)
     listElements = {}
     listGhosts = {}
     loadLevel(pLevel)
-    -- pacman.column = 11
-    -- pacman.columnTo = 11
-    -- pacman.line = 8
-    -- pacman.lineTo = 8
-    -- pacman.x = (pacman.column - 1) * 8
-    -- pacman.y = (pacman.line - 1) * 8
     camera.x = -40
     camera.y = -40
     pacman.state = PACMAN_STATE_NORMAL

@@ -9,11 +9,11 @@ map.grid[1] = {
     "w.ww............ww.w",
     "w.........b........w",
     "e.......ww-ww......e",
-    " w..ww..wipcw..ww.w ",
+    "w...ww..wipcw..ww..w",
     "e.......wwwww......e",
-    "w.................w",
+    "w........@.........w",
     "w.ww....wwww....ww.w",
-    "wd................@dw",
+    "wd................dw",
     "wwwwwwwwwwwwwwwwwwww"
 }
 
@@ -120,10 +120,7 @@ function reArange(el)
 end
 
 function canWalk(pL, pC)
-    if pC > 0 and pC <= map.width and pL > 0 and pL <= map.height then
-        return string.sub(map.grid[1][pL], pC, pC) ~= WALL and string.sub(map.grid[1][pL], pC, pC) ~= ROPE
-    end
-    return false
+    return string.sub(map.grid[1][pL], pC, pC) ~= WALL and string.sub(map.grid[1][pL], pC, pC) ~= ROPE
 end
 
 function canDraw(pTile)
@@ -163,6 +160,7 @@ function loadLevel(pLevel)
             elseif char == PACMAN then
                 pacman.line = l
                 pacman.column = c
+                reArange(pacman)
             end
             if char == ROPE then
                 ghostHome.line = l - 1
