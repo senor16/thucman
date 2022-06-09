@@ -182,9 +182,7 @@ function updateGhosts(pGhost, pId)
         end
         -- Eaten state
         if gh.state == GHOST_STATE_EATEN then
-            if gh.level == GHOST_LEVEL_BLINKY then
-                nDir = nextDirection(gh.line, gh.column, ghostHome.line, ghostHome.column, dir)
-            end
+            nDir = nextDirection(gh.line, gh.column, ghostHome.line + 2, ghostHome.column, dir)
         end
         if nDir == "l" then
             gh.columnTo = gh.column - 1

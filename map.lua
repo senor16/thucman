@@ -74,10 +74,7 @@ function getDirections(pLine, pCol, pDir)
     if string.sub(grid[pLine - 1], pCol, pCol) ~= WALL and pDir ~= "d" then
         table.insert(directions, "u")
     end
-    if
-        string.sub(grid[pLine + 1], pCol, pCol) ~= WALL and string.sub(grid[pLine + 1], pCol, pCol) ~= ROPE and
-            pDir ~= "u"
-     then
+    if string.sub(grid[pLine + 1], pCol, pCol) ~= WALL and pDir ~= "u" then
         table.insert(directions, "d")
     end
     if string.sub(grid[pLine], pCol + 1, pCol + 1) ~= WALL and pDir ~= "l" then

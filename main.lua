@@ -35,7 +35,7 @@ end
 
 function love.draw()
     vthumb_engine.draw()
-    --[[if ghostIT ~= nil then
+    if ghostIT ~= nil then
         love.graphics.print(
             "current " .. string.sub(map.grid[currentLevel][ghostIT.line], ghostIT.column, ghostIT.column)
         )
@@ -44,7 +44,7 @@ function love.draw()
         love.graphics.print("lineTo: " .. ghostIT.lineTo .. ", columnTo: " .. ghostIT.columnTo, 0, 45)
         love.graphics.print("state: " .. ghostIT.state, 0, 60)
         love.graphics.print("state timer: " .. ghostIT.stateTimer, 0, 75)
-    end]]
+    end
 end
 
 function love.keypressed(key)
