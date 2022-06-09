@@ -10,9 +10,9 @@ map.grid[1] = {
     "w.........b........w",
     "e.......ww-ww......e",
     " w..ww..wipcw..ww.w ",
-    "ww......wwwww.....ww",
-    "e..................e",
-    "w..ww...wwww...ww..w",
+    "e.......wwwww......e",
+    "w..................w",
+    "w.ww....wwww....ww.w",
     "wd................dw",
     "wwwwwwwwwwwwwwwwwwww"
 }
@@ -68,14 +68,20 @@ map.grid[5] = {
 }
 
 -- Map functions
-function getDirections(pLine, pCol, pDir)
+function getDirections(pLine, pCol, pDir, pState)
     local directions = {}
     local grid = map.grid[currentLevel]
     if string.sub(grid[pLine - 1], pCol, pCol) ~= WALL and pDir ~= "d" then
         table.insert(directions, "u")
     end
     if string.sub(grid[pLine + 1], pCol, pCol) ~= WALL and pDir ~= "u" then
-        table.insert(directions, "d")
+        if string.sub(grid[pLine + 1], pCol, pCol) == ROPE then
+            if pState == GHOST_STATE_EATEN then
+                table.insert(directions, "d")
+            end
+        else
+            table.insert(directions, "d")
+        end
     end
     if string.sub(grid[pLine], pCol + 1, pCol + 1) ~= WALL and pDir ~= "l" then
         table.insert(directions, "r")

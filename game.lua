@@ -70,7 +70,7 @@ end
 function addGhost(pX, pY, pSprite, pLevel)
     local gh = addElement(pX, pY, pSprite, GHOST)
     gh.level = pLevel
-    gh.state = GHOST_STATE_CHASE
+    gh.state = GHOST_STATE_SCATTER
     gh.dir = "l"
     gh.trans = 1
     gh.stateTimer = 0
@@ -160,7 +160,7 @@ function updateGhosts(pGhost, pId)
             end
         end
     else
-        local dir = getDirections(gh.line, gh.column, gh.dir)
+        local dir = getDirections(gh.line, gh.column, gh.dir, gh.level)
         local nDir = ""
         -- Chase state
         if gh.state == GHOST_STATE_CHASE then
@@ -180,10 +180,14 @@ function updateGhosts(pGhost, pId)
         end
         -- Scatter state
         if gh.state == GHOST_STATE_SCATTER then
-            if gh.level == GHOST_LEVEL_BLINKY then
+            if gh.level == GHOST_LEVEL_BLINKY then -- Blinky
                 nDir = nextDirection(gh.line, gh.column, -4, map.width, dir)
-            elseif gh.level == GHOST_LEVEL_PINKY then
+            elseif gh.level == GHOST_LEVEL_PINKY then -- Pinky
                 nDir = nextDirection(gh.line, gh.column, -4, 0, dir)
+            elseif gh.level == GHOST_LEVEL_INKY then -- Inky
+                nDir = nextDirection(gh.line, gh.column, map.height + 4, map.width, dir)
+            elseif gh.level == GHOST_LEVEL_CLYDE then -- Clyde
+                nDir = nextDirection(gh.line, gh.column, map.height, 0, dir)
             end
         end
         -- Frightened state
@@ -309,7 +313,7 @@ function initGame(pLevel)
     pacman.x = (pacman.column - 1) * 8
     pacman.y = (pacman.line - 1) * 8
     camera.x = -40
-    camera.y = -24
+    camera.y = -40
     pacman.state = PACMAN_STATE_NORMAL
 end
 
