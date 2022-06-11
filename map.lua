@@ -51,12 +51,6 @@ map.grid[2] = {
     " wwwwwwwwwwwwwwwwwww "
 }
 
-map.grid[3] = {}
-
-map.grid[4] = {}
-
-map.grid[5] = {}
-
 -- Map functions
 function getDirections(pLine, pCol, pDir, pState)
     local directions = {}
@@ -135,13 +129,13 @@ function drawMap()
     end
 end
 
-function loadLevel(pLevel)
+function loadLevel(pLevel, pResume)
     map.currentGrid = map.grid[pLevel]
     local char
     for l = 1, map.height do
         for c = 1, map.width do
             char = string.sub(map.currentGrid[l], c, c)
-            if char == DOT_LEVEL_SMALL or char == DOT_LEVEL_BIG then
+            if char == DOT_LEVEL_SMALL or char == DOT_LEVEL_BIG and pResume then
                 addDots((c - 1) * 8, (l - 1) * 8, sprites[char], char)
             elseif
                 char == GHOST_LEVEL_BLINKY or char == GHOST_LEVEL_CLYDE or char == GHOST_LEVEL_INKY or
@@ -151,6 +145,14 @@ function loadLevel(pLevel)
             elseif char == PACMAN then
                 pacman.line = l
                 pacman.column = c
+                pacman.columnTo = c
+                pacman.lineTo = l
+                pacman.deathTimer = 0
+                pacman.state = PACMAN_STATE_NORMAL
+
+                camera.x = -47
+                camera.y = -102
+                pacman.start = false
                 reArange(pacman)
             end
             if char == ROPE then

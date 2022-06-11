@@ -109,7 +109,10 @@ camera = {x = 0, y = 0}
 pacman = {}
 pacman.nextDir = ""
 pacman.time = 1
+pacman.start = false
 pacman.line = 1
+pacman.lives = 4
+pacman.deathTimer = 0
 pacman.column = 1
 pacman.lineTo = 1
 pacman.columnTo = 1
@@ -120,7 +123,7 @@ require("sprites")
 function updateAnimations()
     -- Pacman animation
     pacman.time = pacman.time + 1 / 4
-    if pacman.time >= #pacman.current + 1 then
+    if pacman.time >= #pacman.current + 1 and pacman.state ~= PACMAN_STATE_DEAD then
         pacman.time = 1
     end
     -- Other animations
@@ -286,10 +289,10 @@ function updateGhosts(pGhost)
         if pacman.state == PACMAN_STATE_KILL and gh.state == GHOST_STATE_FRIGHTENED then
             gh.state = GHOST_STATE_EATEN
         else
-            playSound(dead, false)
             pacman.current = pacman.dead
             pacman.time = 1
             pacman.state = PACMAN_STATE_DEAD
+            playSound(dead, false)
         end
         if gh.column <= 0 then
             gh.column = map.width
@@ -371,10 +374,18 @@ function drawElements(pCamx, pCamy)
     for i = 1, #listElements do
         local el = listElements[i]
         if el.sprite ~= nil then
-            vthumb.Sprite(pCamx + el.x, pCamy + el.y, el.sprite)
+            if el.type == GHOST then
+                if pacman.state ~= PACMAN_STATE_DEAD then
+                    vthumb.Sprite(pCamx + el.x, pCamy + el.y, el.sprite)
+                end
+            else
+                vthumb.Sprite(pCamx + el.x, pCamy + el.y, el.sprite)
+            end
         end
     end
-    vthumb.Sprite(pCamx + pacman.x, pCamy + pacman.y, pacman.current[math.floor(pacman.time)])
+    if pacman.current[math.floor(pacman.time)] ~= nil then
+        vthumb.Sprite(pCamx + pacman.x, pCamy + pacman.y, pacman.current[math.floor(pacman.time)])
+    end
 end
 
 -- Functions specific the Game scene
@@ -384,9 +395,6 @@ function initGame(pLevel)
     listElements = {}
     listGhosts = {}
     loadLevel(pLevel)
-    camera.x = -40
-    camera.y = -102
-    pacman.state = PACMAN_STATE_NORMAL
     love.audio.play(song)
 end
 
