@@ -1,71 +1,61 @@
 -- Map
 map = {}
-map.height = 11
-map.width = 20
+map.height = 21
+map.width = 21
 map.grid = {}
 map.grid[1] = {
-    "wwwwwwwwwwwwwwwwwwww",
-    "wd................dw",
-    "w.ww............ww.w",
-    "w.........b........w",
-    "e.......ww-ww......e",
-    "w...ww..wipcw..ww..w",
-    "e.......wwwww......e",
-    "w........@.........w",
-    "w.ww....wwww....ww.w",
-    "wd................dw",
-    "wwwwwwwwwwwwwwwwwwww"
+    " wwwwwwwwwwwwwwwwwww ",
+    " w........w........w ",
+    " wdww.www.w.www.wwdw ",
+    " w.................w ",
+    " w.ww.w.wwwww.w.ww.w ",
+    " w....w...w...w....w ",
+    " wwww.www w www.wwww ",
+    "    w.w   b   w.w    ",
+    "wwwww.w ww-ww w.wwwww",
+    "        wipcw        ",
+    "wwwww.w wwwww w.wwwww",
+    "    w.w       w.w    ",
+    " wwww.w wwwww w.wwww ",
+    " w........w........w ",
+    " w.ww.www.w.www.ww.w ",
+    " wd.w.....@.....w.dw ",
+    " ww.w.w.wwwww.w.w.ww ",
+    " w....w...w...w....w ",
+    " w.wwwwww.w.wwwwww.w ",
+    " w.................w ",
+    " wwwwwwwwwwwwwwwwwww "
 }
 
 map.grid[2] = {
-    "wwwwwwwwwwwwwwwwwwww",
-    "w....w........w....w",
-    "w....w........w....w",
-    "e...ww....b...ww...e",
-    "ww......ww-ww.....ww",
-    " w......wipcw.....w ",
-    "ww......wwwww.....ww",
-    "e..................e",
-    "w.......wwww.......w",
-    "w..................w",
-    "wwwwwwwwwwwwwwwwwwww"
+    " wwwwwwwwwwwwwwwwwww ",
+    " w........w........w ",
+    " wdww.www.w.www.wwdw ",
+    " w.................w ",
+    " w.ww.w.wwwww.w.ww.w ",
+    " w....w...w...w....w ",
+    " wwww.www w www.wwww ",
+    "    w.w   b   w.w    ",
+    "wwwww.w ww-ww w.wwwww",
+    "        wipcw        ",
+    "wwwww.w wwwww w.wwwww",
+    "    w.w       w.w    ",
+    " wwww.w wwwww w.wwww ",
+    " w........w........w ",
+    " w.ww.www.w.www.ww.w ",
+    " wd.w.....@.....w.dw ",
+    " ww.w.w.wwwww.w.w.ww ",
+    " w....w...w...w....w ",
+    " w.wwwwww.w.wwwwww.w ",
+    " w.................w ",
+    " wwwwwwwwwwwwwwwwwww "
 }
 
-map.grid[3] = {
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    ".............."
-}
+map.grid[3] = {}
 
-map.grid[4] = {
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    ".............."
-}
+map.grid[4] = {}
 
-map.grid[5] = {
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    ".............."
-}
+map.grid[5] = {}
 
 -- Map functions
 function getDirections(pLine, pCol, pDir, pState)

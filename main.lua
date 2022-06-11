@@ -66,6 +66,7 @@ function love.draw()
         love.graphics.print("x: " .. pacman.x .. "  y: " .. pacman.y, x, y + 15)
         love.graphics.print("line: " .. pacman.line .. ", column: " .. pacman.column, x, y + 30)
         love.graphics.print("lineTo: " .. pacman.lineTo .. ", columnTo: " .. pacman.columnTo, x, y + 45)
+        love.graphics.print("Camera.x : " .. camera.x .. ", Camera.y : " .. camera.y, x, y + 60)
     end
 end
 

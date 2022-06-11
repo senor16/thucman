@@ -384,7 +384,7 @@ function initGame(pLevel)
     listGhosts = {}
     loadLevel(pLevel)
     camera.x = -40
-    camera.y = -40
+    camera.y = -102
     pacman.state = PACMAN_STATE_NORMAL
 end
 
