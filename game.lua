@@ -29,10 +29,11 @@ require("scenemenu")
 require("functions")
 require("scenegame")
 
--- Musics
+-- Sfx
 eat = love.audio.newSource("sfx/eat.wav", "static")
 dead = love.audio.newSource("sfx/dead.wav", "static")
-
+-- Musics
+song = love.audio.newSource("musics/song.wav", "stream")
 -- Game variables
 scene = SCENE_MENU
 currentLevel = 1
@@ -386,6 +387,7 @@ function initGame(pLevel)
     camera.x = -40
     camera.y = -102
     pacman.state = PACMAN_STATE_NORMAL
+    love.audio.play(song)
 end
 
 -- Init everything
