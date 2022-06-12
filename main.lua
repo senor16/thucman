@@ -39,7 +39,7 @@ function love.draw()
         local x,
             y = 0, 0
         local xycor = {{x = 0, y = 0}, {x = 600, y = 0}, {x = 0, y = 200}, {x = 600, y = 200}}
-        --[[for k, ghost in pairs(listGhosts) do
+        for k, ghost in pairs(listGhosts) do
             y = xycor[k].y
             x = xycor[k].x
             love.graphics.print("current " .. ghost.level, x, y)
@@ -61,12 +61,11 @@ function love.draw()
                 y + 90
             )
             love.graphics.print("Trans : " .. ghost.trans, x, y + 105)
-        end]]
+        end
         y = y + 200
-        love.graphics.print("x: " .. pacman.x .. "  y: " .. pacman.y, x, y + 15)
+        love.graphics.print("levelWonTimer " .. levelWonTimer, x, y + 15)
         love.graphics.print("Lifes: " .. pacman.lives, x, y + 30)
-
-        love.graphics.print("DeathTimer : " .. pacman.deathTimer, x, y + 45)
+        love.graphics.print("state : " .. pacman.state, x, y + 45)
         love.graphics.print("Game Over: " .. tostring(gameOver), x, y + 60)
     end
 end

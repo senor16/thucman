@@ -1,5 +1,5 @@
 function updateGame()
-    if pacman.state ~= PACMAN_STATE_DEAD then
+    if pacman.state ~= PACMAN_STATE_DEAD and not gameWon then
         -- Pacaman moves
         local camc = math.floor((pacman.x + camera.x) / 8) + 1
         local caml = math.floor((pacman.y + camera.y) / 8) + 1
@@ -136,6 +136,10 @@ function updateGame()
             pacman.lives = pacman.lives - 1
             if pacman.lives < 1 then
                 gameOver = true
+                if currentScore > hiScore then
+                    hiScore = currentScore
+                    saveHightScore(hiScore)
+                end
             else
                 listGhosts = {}
                 for l = #listElements, 1, -1 do

@@ -135,7 +135,7 @@ function loadLevel(pLevel, pResume)
     for l = 1, map.height do
         for c = 1, map.width do
             char = string.sub(map.currentGrid[l], c, c)
-            if char == DOT_LEVEL_SMALL or char == DOT_LEVEL_BIG and pResume then
+            if (char == DOT_LEVEL_SMALL or char == DOT_LEVEL_BIG) and  #listDots <3 and  not pResume then
                 addDots((c - 1) * 8, (l - 1) * 8, sprites[char], char)
             elseif
                 char == GHOST_LEVEL_BLINKY or char == GHOST_LEVEL_CLYDE or char == GHOST_LEVEL_INKY or

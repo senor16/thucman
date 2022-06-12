@@ -7,7 +7,6 @@ BONUS_STRAWBERRY = "2"
 -- sprites
 WALL = "w"
 ROPE = "-"
-ESCAPE = "e"
 DOT_LEVEL_BIG = "d"
 DOT_LEVEL_SMALL = "."
 GHOST = "GHOST"

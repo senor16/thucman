@@ -37,8 +37,10 @@ song = love.audio.newSource("musics/song.wav", "stream")
 -- Game variables
 scene = SCENE_MENU
 currentLevel = 1
+levelWonTimer = 2
 gameOver = false
 gameWon = false
+eatenGhosts=1
 hiScore = love.filesystem.read("hiScore.txt")
 ghostHome = {line = 0, column = 0}
 blinkyId = 0
@@ -244,8 +246,8 @@ function updateGhosts(pGhost)
             if gh.trans < #GHOST_TRANSITIONS then
                 local time = GHOST_TRANSITIONS[currentLevel][gh.trans][1]
                 if gh.stateTimer >= time then
-                    --gh.dir = goBack(gh.dir)
-                    -- gh.state = GHOST_STATE_CHASE
+                    gh.dir = goBack(gh.dir)
+                     gh.state = GHOST_STATE_CHASE
                     gh.stateTimer = 0
                 end
             end
@@ -264,11 +266,15 @@ function updateGhosts(pGhost)
             nDir = dir[love.math.random(1, #dir)]
             if gh.blueTimer >= GHOST_BLUE_TIME[currentLevel] then
                 gh.state = gh.prevState
+                pacman.state = PACMAN_STATE_NORMAL
             end
         end
         -- Eaten state
         if gh.state == GHOST_STATE_EATEN then
             nDir = nextDirection(gh.line, gh.column, ghostHome.line + 2, ghostHome.column, dir)
+            if gh.line == ghostHome.line+2 and gh.line == ghostHome.column then
+                gh.state = GHOST_STATE_SCATTER
+            end
         end
         if nDir == "l" then
             gh.columnTo = gh.column - 1
@@ -286,11 +292,17 @@ function updateGhosts(pGhost)
     end
 
     if isColliding(gh.x, gh.y, pacman.x, pacman.y) then
-        if pacman.state == PACMAN_STATE_KILL and gh.state == GHOST_STATE_FRIGHTENED then
-            gh.state = GHOST_STATE_EATEN
+        if pacman.state == PACMAN_STATE_KILL  then
+            if gh.state == GHOST_STATE_FRIGHTENED then
+                gh.state = GHOST_STATE_EATEN
+                print(eatenGhosts)
+                currentScore = currentScore + REWARDS[GHOST][eatenGhosts]
+                eatenGhosts = eatenGhosts+1
+            end
         else
             pacman.current = pacman.dead
             pacman.time = 1
+            
             pacman.state = PACMAN_STATE_DEAD
             playSound(dead, false)
         end
@@ -305,6 +317,10 @@ function updateGhosts(pGhost)
 end
 
 function updateElements()
+    if gameWon then
+        levelWonTimer = levelWonTimer - 1/love.timer.getFPS()
+    end
+
     for i = #listElements, 1, -1 do
         local el = listElements[i]
         if scene == SCENE_MENU then
@@ -346,7 +362,11 @@ function updateElements()
                             gh.state = GHOST_STATE_FRIGHTENED
                             gh.dir = goBack(gh.dir)
                         end
+                        currentScore = currentScore+REWARDS[DOT_LEVEL_BIG]
+                    else
+                        currentScore = currentScore+REWARDS[DOT_LEVEL_SMALL]
                     end
+                    
                     table.remove(listElements, i)
                     el.del = true
                 end
@@ -367,6 +387,22 @@ function updateElements()
         local el = listDots[i]
         if el.del then
             table.remove(listDots, i)
+        end
+    end
+    if #listDots == 0 then
+        gameWon = true
+        if currentLevel == 1 then
+            if levelWonTimer <=0 then
+                currentLevel = currentLevel+1
+                loadLevel(currentLevel,false)
+                gameWon = false
+            end
+            listBonus={}
+            listGhosts={}
+            listElements={}
+            
+        elseif currentLevel == 2 then
+            scene = SCENE_VICTORY
         end
     end
 end
@@ -403,7 +439,7 @@ function init()
     if scene == SCENE_MENU then
         initMenu()
     elseif scene == SCENE_GAME then
-        initGame(currentLevel)
+        initGame(currentLevel,false)
     end
 end
 
