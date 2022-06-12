@@ -35,7 +35,7 @@ function updateMenu()
             el.x = el.x + menu.vx
         end
     end
-    if #listElements <= 0 and pacman.x >= 172 then
+    if pacman.x >= 172 then
         initMenu()
     end
 
@@ -49,6 +49,6 @@ function drawMenu()
     local y = 1
     drawText(4, y, "THUC-MAN")
     drawString(10, y + 12, "HI-SCORE " .. hiScore)
-    drawString(20, y + 22, "PRESS A+B")
+    drawString(17, y + 22, "TAPEZ A+B")
     drawElements(0, 0)
 end

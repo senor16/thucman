@@ -3,31 +3,7 @@ map = {}
 map.height = 21
 map.width = 21
 map.grid = {}
-map.grid[1] = {
-    " wwwwwwwwwwwwwwwwwww ",
-    " w........w........w ",
-    " wdww.www.w.www.wwdw ",
-    " w.................w ",
-    " w.ww.w.wwwww.w.ww.w ",
-    " w....w...w...w....w ",
-    " wwww.www w www.wwww ",
-    "    w.w   b   w.w    ",
-    "wwwww.w ww-ww w.wwwww",
-    "        wipcw        ",
-    "wwwww.w wwwww w.wwwww",
-    "    w.w       w.w    ",
-    " wwww.w wwwww w.wwww ",
-    " w........w........w ",
-    " w.ww.www.w.www.ww.w ",
-    " wd.w.....@.....w.dw ",
-    " ww.w.w.wwwww.w.w.ww ",
-    " w....w...w...w....w ",
-    " w.wwwwww.w.wwwwww.w ",
-    " w.................w ",
-    " wwwwwwwwwwwwwwwwwww "
-}
-
-map.grid[2] = {
+map.grid = {
     " wwwwwwwwwwwwwwwwwww ",
     " w........w........w ",
     " wdww.www.w.www.wwdw ",
@@ -54,7 +30,7 @@ map.grid[2] = {
 -- Map functions
 function getDirections(pLine, pCol, pDir, pState)
     local directions = {}
-    local grid = map.grid[currentLevel]
+    local grid = map.grid
 
     if grid[pLine - 1] ~= nil and string.sub(grid[pLine - 1], pCol, pCol) ~= WALL and pDir ~= "d" then
         table.insert(directions, "u")
@@ -105,7 +81,7 @@ function reArange(el)
 end
 
 function canWalk(pL, pC)
-    return string.sub(map.grid[1][pL], pC, pC) ~= WALL and string.sub(map.grid[1][pL], pC, pC) ~= ROPE
+    return string.sub(map.grid[pL], pC, pC) ~= WALL and string.sub(map.grid[pL], pC, pC) ~= ROPE
 end
 
 function canDraw(pTile)
@@ -119,7 +95,7 @@ function drawMap()
     for l = 1, map.height do
         x = camera.x
         for c = 1, map.width do
-            char = string.sub(map.currentGrid[l], c, c)
+            char = string.sub(map.grid[l], c, c)
             if canDraw(char) then
                 vthumb.Sprite(x, y, sprites[char])
             end
@@ -129,13 +105,12 @@ function drawMap()
     end
 end
 
-function loadLevel(pLevel, pResume)
-    map.currentGrid = map.grid[pLevel]
+function loadLevel(pResume)
     local char
     for l = 1, map.height do
         for c = 1, map.width do
-            char = string.sub(map.currentGrid[l], c, c)
-            if (char == DOT_LEVEL_SMALL or char == DOT_LEVEL_BIG) and  #listDots <3 and  not pResume then
+            char = string.sub(map.grid[l], c, c)
+            if (char == DOT_LEVEL_SMALL or char == DOT_LEVEL_BIG) and not pResume then
                 addDots((c - 1) * 8, (l - 1) * 8, sprites[char], char)
             elseif
                 char == GHOST_LEVEL_BLINKY or char == GHOST_LEVEL_CLYDE or char == GHOST_LEVEL_INKY or

@@ -1,5 +1,5 @@
 function updateGame()
-    if pacman.state ~= PACMAN_STATE_DEAD and not gameWon then
+    if pacman.state ~= PACMAN_STATE_DEAD then
         -- Pacaman moves
         local camc = math.floor((pacman.x + camera.x) / 8) + 1
         local caml = math.floor((pacman.y + camera.y) / 8) + 1
@@ -81,7 +81,7 @@ function updateGame()
                     pacman.column = pacman.columnTo
                 end
                 -- Camera
-                if camc > 5 and string.sub(map.currentGrid[l], c + 4, c + 4) ~= "" then
+                if camc > 5 and string.sub(map.grid[l], c + 4, c + 4) ~= "" then
                     camera.x = camera.x - 1
                 end
             elseif pacman.columnTo < pacman.column then -- To the left
@@ -104,7 +104,7 @@ function updateGame()
                     pacman.moving = false
                 end
                 -- Camera
-                if caml < 3 and map.currentGrid[l - 2] ~= nil then
+                if caml < 3 and map.grid[l - 2] ~= nil then
                     camera.y = camera.y + 1
                 end
             elseif pacman.lineTo > pacman.line then -- To bottom
@@ -114,7 +114,7 @@ function updateGame()
                     pacman.moving = false
                 end
                 -- Camera
-                if caml > 2 and map.currentGrid[l + 3] ~= nil then
+                if caml > 2 and map.grid[l + 3] ~= nil then
                     camera.y = camera.y - 1
                 end
             end
@@ -141,13 +141,12 @@ function updateGame()
                     saveHightScore(hiScore)
                 end
             else
-                listGhosts = {}
                 for l = #listElements, 1, -1 do
                     if listElements[l].type == GHOST then
                         table.remove(listElements, l)
                     end
                 end
-                loadLevel(currentLevel, true)
+                loadLevel(true)
             end
         end
     end

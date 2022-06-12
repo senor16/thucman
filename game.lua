@@ -36,17 +36,16 @@ dead = love.audio.newSource("sfx/dead.wav", "static")
 song = love.audio.newSource("musics/song.wav", "stream")
 -- Game variables
 scene = SCENE_MENU
-currentLevel = 1
-levelWonTimer = 2
+
 gameOver = false
 gameWon = false
-eatenGhosts=1
+eatenGhosts = 1
 hiScore = love.filesystem.read("hiScore.txt")
 ghostHome = {line = 0, column = 0}
 blinkyId = 0
 function saveHightScore(pScore)
     if pScore ~= nil and pScore > 0 then
-        print(love.filesystem.write("hiScore.txt", tostring(pScore)))
+        love.filesystem.write("hiScore.txt", tostring(pScore))
     end
 end
 if hiScore == nil or hiScore == "" then
@@ -62,8 +61,6 @@ currentScore = 0
 listElements = {}
 listDots = {}
 listGhosts = {}
-listBonus = {}
-listPlayers = {}
 
 function addElement(pX, pY, pSprite, pType)
     local el = {x = pX, y = pY, sprite = pSprite, time = 1, anim = nil, del = false, type = pType}
@@ -96,12 +93,6 @@ function addDots(pX, pY, pSprite, pLevel)
     local dt = addElement(pX, pY, pSprite, DOT)
     dt.level = pLevel
     table.insert(listDots, dt)
-end
-
-function addBonus(pX, pY, pSprite, pLevel)
-    local bn = addElement(pX, pY, pSprite, BONUS)
-    bn.level = pLevel
-    table.insert(listBonus, bn)
 end
 
 -- Camera
@@ -181,17 +172,18 @@ function updateGhosts(pGhost)
         local nDir = ""
         -- Chase state
         if gh.state == GHOST_STATE_CHASE then
+            gh.anim = ghost.botomLeft
             if gh.trans < #GHOST_TRANSITIONS then
-                local chaseTime = GHOST_TRANSITIONS[currentLevel][gh.trans][2]
+                local chaseTime = GHOST_TRANSITIONS[gh.trans][2]
                 if gh.stateTimer >= chaseTime and chaseTime > 0 then
                     gh.dir = goBack(gh.dir)
                     gh.state = GHOST_STATE_SCATTER
-                    if gh.level == GHOST_LEVEL_BLINKY and #listDots <= GHOST_FORCE_CHASE[currentLevel] then
+                    if gh.level == GHOST_LEVEL_BLINKY and #listDots <= GHOST_FORCE_CHASE then
                         gh.state = GHOST_STATE_CHASE
                     end
                     gh.trans = gh.trans + 1
-                    if gh.trans > #GHOST_TRANSITIONS[currentLevel] then
-                        gh.trans = #GHOST_TRANSITIONS[currentLevel]
+                    if gh.trans > #GHOST_TRANSITIONS then
+                        gh.trans = #GHOST_TRANSITIONS
                     end
                     gh.stateTimer = 0
                 end
@@ -243,11 +235,12 @@ function updateGhosts(pGhost)
         end
         -- Scatter state
         if gh.state == GHOST_STATE_SCATTER then
+            gh.anim = ghost.botomLeft
             if gh.trans < #GHOST_TRANSITIONS then
-                local time = GHOST_TRANSITIONS[currentLevel][gh.trans][1]
+                local time = GHOST_TRANSITIONS[gh.trans][1]
                 if gh.stateTimer >= time then
                     gh.dir = goBack(gh.dir)
-                     gh.state = GHOST_STATE_CHASE
+                    gh.state = GHOST_STATE_CHASE
                     gh.stateTimer = 0
                 end
             end
@@ -263,17 +256,20 @@ function updateGhosts(pGhost)
         end
         -- Frightened state
         if gh.state == GHOST_STATE_FRIGHTENED then
+            gh.anim = ghost.frightened
             nDir = dir[love.math.random(1, #dir)]
-            if gh.blueTimer >= GHOST_BLUE_TIME[currentLevel] then
+            if gh.blueTimer >= GHOST_BLUE_TIME then
                 gh.state = gh.prevState
                 pacman.state = PACMAN_STATE_NORMAL
+                eatenGhosts = 1
             end
         end
         -- Eaten state
         if gh.state == GHOST_STATE_EATEN then
+            gh.anim = ghost.eyes
             nDir = nextDirection(gh.line, gh.column, ghostHome.line + 2, ghostHome.column, dir)
-            if gh.line == ghostHome.line+2 and gh.line == ghostHome.column then
-                gh.state = GHOST_STATE_SCATTER
+            if gh.line == ghostHome.line + 2 and gh.line == ghostHome.column then
+            -- gh.state = GHOST_STATE_SCATTER
             end
         end
         if nDir == "l" then
@@ -292,17 +288,13 @@ function updateGhosts(pGhost)
     end
 
     if isColliding(gh.x, gh.y, pacman.x, pacman.y) then
-        if pacman.state == PACMAN_STATE_KILL  then
-            if gh.state == GHOST_STATE_FRIGHTENED then
-                gh.state = GHOST_STATE_EATEN
-                print(eatenGhosts)
-                currentScore = currentScore + REWARDS[GHOST][eatenGhosts]
-                eatenGhosts = eatenGhosts+1
-            end
-        else
+        if gh.state == GHOST_STATE_FRIGHTENED then
+            gh.state = GHOST_STATE_EATEN
+            currentScore = currentScore + REWARDS[GHOST][eatenGhosts]
+            eatenGhosts = eatenGhosts + 1
+        elseif gh.state == GHOST_STATE_CHASE or gh.state == GHOST_STATE_SCATTER then
             pacman.current = pacman.dead
             pacman.time = 1
-            
             pacman.state = PACMAN_STATE_DEAD
             playSound(dead, false)
         end
@@ -317,10 +309,6 @@ function updateGhosts(pGhost)
 end
 
 function updateElements()
-    if gameWon then
-        levelWonTimer = levelWonTimer - 1/love.timer.getFPS()
-    end
-
     for i = #listElements, 1, -1 do
         local el = listElements[i]
         if scene == SCENE_MENU then
@@ -332,21 +320,21 @@ function updateElements()
                         pacman.current = pacman.right
                         for l = 1, #listGhosts do
                             local gh = listGhosts[l]
-                            gh.anim = ghost.botomRight
+                            gh.anim = ghost.frightened
                         end
                     end
                     if el.level == DOT_LEVEL_BIG then
                         pacman.state = PACMAN_STATE_KILL
                     end
-                    table.remove(listElements, i)
                     el.del = true
+                    table.remove(listElements, i)
                 end
             elseif el.type == GHOST then
                 if isColliding(el.x + 6, el.y, pacman.x, pacman.y) then
                     if pacman.state == PACMAN_STATE_KILL then
                         playSound(eat)
-                        table.remove(listElements, i)
                         el.del = true
+                        table.remove(listElements, i)
                     end
                 end
             end
@@ -362,13 +350,12 @@ function updateElements()
                             gh.state = GHOST_STATE_FRIGHTENED
                             gh.dir = goBack(gh.dir)
                         end
-                        currentScore = currentScore+REWARDS[DOT_LEVEL_BIG]
+                        currentScore = currentScore + REWARDS[DOT_LEVEL_BIG]
                     else
-                        currentScore = currentScore+REWARDS[DOT_LEVEL_SMALL]
+                        currentScore = currentScore + REWARDS[DOT_LEVEL_SMALL]
                     end
-                    
-                    table.remove(listElements, i)
                     el.del = true
+                    table.remove(listElements, i)
                 end
             elseif el.type == GHOST then
                 updateGhosts(el)
@@ -377,35 +364,26 @@ function updateElements()
     end
 
     -- Remove elements deleted elements from the corresponding list
-    for i = #listBonus, 1, -1 do
-        local el = listBonus[i]
-        if el.del then
-            table.remove(listBonus, i)
-        end
-    end
     for i = #listDots, 1, -1 do
         local el = listDots[i]
         if el.del then
             table.remove(listDots, i)
         end
     end
-    if #listDots == 0 then
-        gameWon = true
-        if currentLevel == 1 then
-            if levelWonTimer <=0 then
-                currentLevel = currentLevel+1
-                loadLevel(currentLevel,false)
-                gameWon = false
-            end
-            listBonus={}
-            listGhosts={}
-            listElements={}
-            
-        elseif currentLevel == 2 then
-            scene = SCENE_VICTORY
+    for i = #listGhosts, 1, -1 do
+        local el = listGhosts[i]
+        if el.del then
+            table.remove(listGhosts, i)
+        end
+    end
+
+    if scene == SCENE_GAME then
+        if #listDots == 0 then
+            gameWon = true
         end
     end
 end
+
 function drawElements(pCamx, pCamy)
     for i = 1, #listElements do
         local el = listElements[i]
@@ -419,18 +397,18 @@ function drawElements(pCamx, pCamy)
             end
         end
     end
+
     if pacman.current[math.floor(pacman.time)] ~= nil then
         vthumb.Sprite(pCamx + pacman.x, pCamy + pacman.y, pacman.current[math.floor(pacman.time)])
     end
 end
 
 -- Functions specific the Game scene
-function initGame(pLevel)
-    listBonus = {}
+function initGame()
     listDots = {}
     listElements = {}
     listGhosts = {}
-    loadLevel(pLevel)
+    loadLevel(false)
     love.audio.play(song)
 end
 
@@ -439,26 +417,60 @@ function init()
     if scene == SCENE_MENU then
         initMenu()
     elseif scene == SCENE_GAME then
-        initGame(currentLevel,false)
+        initGame()
+    end
+end
+
+function drawVictory()
+    drawString(10, 3, "MERCI D'AVOIR")
+    drawString(10, 11, "TESTE MON JEU")
+    drawString(30, 23, "PAR")
+    drawString(15, 32, "SESSO KOSGA")
+    if vthumb.buttonA.pressed then
+        scene = SCENE_MENU
+        gameWon = false
+        init()
+    end
+end
+
+function drawFailure()
+    drawString(10, 2, "PARTIE ECHOUE")
+    drawString(15, 10, "SCORE " .. currentScore)
+    drawString(22, 20, "TAPEZ A ")
+    drawString(10, 28, "POUR REESSAYER")
+    if vthumb.buttonA.pressed then
+        scene = SCENE_MENU
+        gameOver = false
+        init()
     end
 end
 
 init()
-
 function v()
     -- Updates
-    if scene == SCENE_MENU then
-        updateMenu()
-    elseif scene == SCENE_GAME then
-        updateGame()
+    if gameWon then
+        drawVictory()
+    elseif gameOver then
+        drawFailure()
+    else
+        if scene == SCENE_MENU then
+            updateMenu()
+        elseif scene == SCENE_GAME then
+            updateGame()
+        end
+        updateAnimations()
+        updateElements()
     end
-    updateAnimations()
-    updateElements()
-
     -- Drawings
-    if scene == SCENE_MENU then
-        drawMenu()
-    elseif scene == SCENE_GAME then
-        drawGame()
+    if gameWon then
+        drawVictory()
+    elseif gameOver then
+        drawFailure()
+    else
+        if scene == SCENE_MENU then
+            drawMenu()
+        elseif scene == SCENE_GAME then
+            drawGame()
+        end
     end
 end

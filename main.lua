@@ -35,39 +35,6 @@ end
 
 function love.draw()
     vthumb_engine.draw()
-    if scene == SCENE_GAME then
-        local x,
-            y = 0, 0
-        local xycor = {{x = 0, y = 0}, {x = 600, y = 0}, {x = 0, y = 200}, {x = 600, y = 200}}
-        for k, ghost in pairs(listGhosts) do
-            y = xycor[k].y
-            x = xycor[k].x
-            love.graphics.print("current " .. ghost.level, x, y)
-            y = y + 15
-            love.graphics.print("x: " .. ghost.x .. "  y: " .. ghost.y, x, y)
-            love.graphics.print("line: " .. ghost.line .. ", column: " .. ghost.column, x, y + 30)
-            love.graphics.print("lineTo: " .. ghost.lineTo .. ", columnTo: " .. ghost.columnTo, x, y + 45)
-            love.graphics.print("state: " .. ghost.state .. ", Level : " .. currentLevel, x, y + 60)
-            love.graphics.print(
-                "state timer: " .. math.floor(ghost.stateTimer) .. ", blue timer: " .. math.floor(ghost.blueTimer),
-                x,
-                y + 75
-            )
-            love.graphics.print(
-                "State Goal : Scatter" ..
-                    GHOST_TRANSITIONS[currentLevel][ghost.trans][1] ..
-                        ", Chase " .. GHOST_TRANSITIONS[currentLevel][ghost.trans][2],
-                x,
-                y + 90
-            )
-            love.graphics.print("Trans : " .. ghost.trans, x, y + 105)
-        end
-        y = y + 200
-        love.graphics.print("levelWonTimer " .. levelWonTimer, x, y + 15)
-        love.graphics.print("Lifes: " .. pacman.lives, x, y + 30)
-        love.graphics.print("state : " .. pacman.state, x, y + 45)
-        love.graphics.print("Game Over: " .. tostring(gameOver), x, y + 60)
-    end
 end
 
 function love.keypressed(key)
