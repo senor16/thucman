@@ -36,13 +36,7 @@ function getDirections(pLine, pCol, pDir, pState)
         table.insert(directions, "u")
     end
     if grid[pLine + 1] ~= nil and string.sub(grid[pLine + 1], pCol, pCol) ~= WALL and pDir ~= "u" then
-        if string.sub(grid[pLine + 1], pCol, pCol) == ROPE then
-            if pState == GHOST_STATE_EATEN then
-                table.insert(directions, "d")
-            end
-        else
-            table.insert(directions, "d")
-        end
+        table.insert(directions, "d")
     end
     if grid[pLine] ~= nil and string.sub(grid[pLine], pCol + 1, pCol + 1) ~= WALL and pDir ~= "l" then
         table.insert(directions, "r")
@@ -131,7 +125,7 @@ function loadLevel(pResume)
                 reArange(pacman)
             end
             if char == ROPE then
-                ghostHome.line = l - 1
+                ghostHome.line = l
                 ghostHome.column = c
             end
         end

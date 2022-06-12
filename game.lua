@@ -267,9 +267,10 @@ function updateGhosts(pGhost)
         -- Eaten state
         if gh.state == GHOST_STATE_EATEN then
             gh.anim = ghost.eyes
-            nDir = nextDirection(gh.line, gh.column, ghostHome.line + 2, ghostHome.column, dir)
-            if gh.line == ghostHome.line + 2 and gh.line == ghostHome.column then
-            -- gh.state = GHOST_STATE_SCATTER
+            nDir = nextDirection(gh.line, gh.column, ghostHome.line, ghostHome.column, dir)
+            if gh.line == ghostHome.line and gh.column == ghostHome.column then
+                gh.state = GHOST_STATE_SCATTER
+                gh.anim = ghost.botomLeft
             end
         end
         if nDir == "l" then
@@ -405,6 +406,7 @@ end
 
 -- Functions specific the Game scene
 function initGame()
+    currentScore = 0
     listDots = {}
     listElements = {}
     listGhosts = {}
