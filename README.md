@@ -19,7 +19,7 @@ la Virtual Thumby. Je me suis dit que c'estl'ocasion idéale. Coder un classique
 proches de ceux d'antan, ce sera à la fois fun et formteur. Ayant fait un Lode Runner et un jeu de Zombies
 (avec IA des ennemies), je crois avoir le niveau pour rélever ce challenge.
 
-### Langue : Lua
+### Langage : Lua
 
 ### Framework : Virtual Thumby
 
@@ -37,6 +37,11 @@ Tapez les touches `W`+`A` pour commencer le jeu et dirrigez pacman avec les flè
 ### Sfx :
 
 Récupéré sur un pacman de la pico 8 fait par [buck](https://www.lexaloffle.com/bbs/?pid=113097)
+
+### Inspirations:
+
+[Pico-Man](https://www.lexaloffle.com/bbs/?tid=2098) de UrbanMonk  
+[Pacman](https://www.lexaloffle.com/bbs/?pid=113097) de buck
 
 ### Temps passé : 26h 40mins
 
